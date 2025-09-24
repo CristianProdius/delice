@@ -70,6 +70,17 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            # Write env file from secret
+            cat > /tmp/.env << 'EOF'
+            ${{ secrets.SCHOOL_PROJECT_ENV }}
+            EOF
+
+            # Move to correct location with permissions
+            sudo mv /tmp/.env /srv/clients/delice/school/cms/.env
+            sudo chown strapi:strapi /srv/clients/delice/school/cms/.env
+            sudo chmod 600 /srv/clients/delice/school/cms/.env
+
+            # Deploy
             cd /srv/clients/delice/school/cms
             sudo docker compose pull
             sudo docker compose up -d
