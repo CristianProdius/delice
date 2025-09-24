@@ -1,0 +1,39 @@
+{
+  "kind": "singleType",
+  "collectionName": "headers",
+  "info": {
+    "singularName": "header",
+    "pluralName": "headers",
+    "displayName": "header"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "ownerName": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "default": "Олеся",
+      "required": true
+    },
+    "menuItems": {
+      "type": "component",
+      "component": "navigation.menu-items",
+      "repeatable": true
+    },
+    "ctaButton": {
+      "type": "component",
+      "component": "elements.cta-button",
+      "repeatable": false
+    }
+  }
+}

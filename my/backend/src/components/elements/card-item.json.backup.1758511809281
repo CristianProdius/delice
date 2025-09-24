@@ -1,0 +1,57 @@
+{
+  "collectionName": "components_elements_card_items",
+  "info": {
+    "displayName": "cardItem",
+    "description": "Versatile card component for services, testimonials, pricing"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "icon": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    },
+    "price": {
+      "type": "string"
+    },
+    "badge": {
+      "type": "string"
+    },
+    "features": {
+      "type": "component",
+      "component": "elements.highlights",
+      "repeatable": true
+    },
+    "ctaButton": {
+      "type": "component",
+      "component": "elements.cta-button"
+    },
+    "variant": {
+      "type": "enumeration",
+      "enum": [
+        "service",
+        "testimonial",
+        "pricing",
+        "benefit"
+      ],
+      "default": "service"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_elements_legal_links",
+  "info": {
+    "displayName": "legalLinks"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "newTab": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "config": {}
+}

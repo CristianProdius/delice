@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_sections_heroes",
+  "info": {
+    "displayName": "hero"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header",
+      "required": true
+    },
+    "personName": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    },
+    "background": {
+      "type": "component",
+      "component": "elements.image",
+      "required": true
+    },
+    "ctaButton": {
+      "type": "component",
+      "component": "elements.cta-button",
+      "repeatable": false,
+      "required": true
+    }
+  }
+}

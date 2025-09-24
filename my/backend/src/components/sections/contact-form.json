@@ -1,0 +1,53 @@
+{
+  "collectionName": "components_sections_contact_forms",
+  "info": {
+    "displayName": "contactForm",
+    "description": "Contact form section with customizable fields"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header"
+    },
+    "fields": {
+      "type": "component",
+      "component": "elements.form-field",
+      "repeatable": true
+    },
+    "submitButton": {
+      "type": "component",
+      "component": "elements.cta-button"
+    },
+    "successMessage": {
+      "type": "string",
+      "default": "Thank you for your message! We'll get back to you soon.",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "recipientEmail": {
+      "type": "email"
+    },
+    "consentText": {
+      "type": "string",
+      "default": "I agree to the processing of my personal data",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "enableHoneypot": {
+      "type": "boolean",
+      "default": true,
+      "description": "Enable honeypot spam protection"
+    },
+    "privacyPolicyLink": {
+      "type": "string",
+      "description": "Link to privacy policy page"
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "collectionName": "components_elements_images",
+  "info": {
+    "displayName": "image",
+    "description": "Image with alt text and caption support"
+  },
+  "options": {},
+  "attributes": {
+    "media": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ],
+      "required": true
+    },
+    "alt": {
+      "type": "string",
+      "required": true,
+      "description": "Alternative text for accessibility"
+    },
+    "title": {
+      "type": "string",
+      "description": "Image title attribute"
+    },
+    "caption": {
+      "type": "string",
+      "description": "Image caption to display"
+    },
+    "lazyLoad": {
+      "type": "boolean",
+      "default": true
+    },
+    "link": {
+      "type": "string",
+      "description": "Optional link URL"
+    }
+  }
+}

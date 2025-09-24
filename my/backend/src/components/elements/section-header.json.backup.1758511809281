@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_elements_section_headers",
+  "info": {
+    "displayName": "sectionHeader",
+    "description": "Reusable section header with kicker, title, and subtitle"
+  },
+  "options": {},
+  "attributes": {
+    "kicker": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "alignment": {
+      "type": "enumeration",
+      "enum": [
+        "left",
+        "center",
+        "right"
+      ],
+      "default": "center"
+    }
+  }
+}

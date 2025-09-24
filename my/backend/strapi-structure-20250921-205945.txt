@@ -1,0 +1,1326 @@
+Sun Sep 21 20:59:45 PDT 2025
+STRAPI STRUCTURE EXPORT
+=======================
+
+=== src/api/category/content-types/category/schema.json ===
+{
+  "kind": "collectionType",
+  "collectionName": "categories",
+  "info": {
+    "singularName": "category",
+    "pluralName": "categories",
+    "displayName": "Category",
+    "description": "Product categories"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name"
+    },
+    "description": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "image": {
+      "type": "component",
+      "component": "elements.image"
+    },
+    "products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product.product",
+      "mappedBy": "category"
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}
+
+=== src/api/course/content-types/course/schema.json ===
+{
+  "kind": "collectionType",
+  "collectionName": "courses",
+  "info": {
+    "singularName": "course",
+    "pluralName": "courses",
+    "displayName": "Course",
+    "description": "Chocolate making courses and workshops"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title"
+    },
+    "description": {
+      "type": "blocks",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "duration": {
+      "type": "string"
+    },
+    "price": {
+      "type": "decimal",
+      "required": true
+    },
+    "maxParticipants": {
+      "type": "integer",
+      "default": 10
+    },
+    "schedule": {
+      "type": "json"
+    },
+    "skillLevel": {
+      "type": "enumeration",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ],
+      "default": "beginner"
+    },
+    "whatYouWillLearn": {
+      "type": "component",
+      "component": "elements.highlights",
+      "repeatable": true
+    },
+    "image": {
+      "type": "component",
+      "component": "elements.image"
+    },
+    "gallery": {
+      "type": "component",
+      "component": "elements.image",
+      "repeatable": true,
+      "max": 6
+    },
+    "seo": {
+      "type": "component",
+      "component": "seo.meta-data",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}
+
+=== src/api/footer/content-types/footer/schema.json ===
+{
+  "kind": "singleType",
+  "collectionName": "footers",
+  "info": {
+    "singularName": "footer",
+    "pluralName": "footers",
+    "displayName": "footer"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "address": {
+      "type": "text"
+    },
+    "contactItem": {
+      "type": "component",
+      "component": "elements.contacts",
+      "repeatable": true
+    },
+    "socialLink": {
+      "type": "component",
+      "component": "elements.social-link",
+      "repeatable": true
+    },
+    "bottomNote": {
+      "type": "string"
+    },
+    "legalLinks": {
+      "type": "component",
+      "component": "elements.legal-links",
+      "repeatable": true
+    }
+  }
+}
+
+
+=== src/api/header/content-types/header/schema.json ===
+{
+  "kind": "singleType",
+  "collectionName": "headers",
+  "info": {
+    "singularName": "header",
+    "pluralName": "headers",
+    "displayName": "header"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "ownerName": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "default": "Олеся",
+      "required": true
+    },
+    "menuItems": {
+      "type": "component",
+      "component": "navigation.menu-items",
+      "repeatable": true
+    },
+    "ctaButton": {
+      "type": "component",
+      "component": "elements.cta-button",
+      "repeatable": false
+    }
+  }
+}
+
+
+=== src/api/page/content-types/page/schema.json ===
+{
+  "kind": "collectionType",
+  "collectionName": "pages",
+  "info": {
+    "singularName": "page",
+    "pluralName": "pages",
+    "displayName": "Page",
+    "description": "Dynamic pages with flexible sections"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title"
+    },
+    "sections": {
+      "type": "dynamiczone",
+      "components": [
+        "sections.hero",
+        "sections.about",
+        "sections.services",
+        "sections.gallery",
+        "sections.testimonials",
+        "sections.faq",
+        "sections.contact-form",
+        "sections.benefits",
+        "sections.tariffs",
+        "sections.banner"
+      ]
+    },
+    "seo": {
+      "type": "component",
+      "component": "seo.meta-data",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}
+
+
+=== src/api/post/content-types/post/schema.json ===
+{
+  "kind": "collectionType",
+  "collectionName": "posts",
+  "info": {
+    "singularName": "post",
+    "pluralName": "posts",
+    "displayName": "Blog Post",
+    "description": "Blog posts and articles"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title"
+    },
+    "excerpt": {
+      "type": "text",
+      "maxLength": 300,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "coverImage": {
+      "type": "component",
+      "component": "elements.image"
+    },
+    "content": {
+      "type": "blocks",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "author": {
+      "type": "string",
+      "default": "Olesea"
+    },
+    "publishedAt": {
+      "type": "datetime"
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "recipes",
+        "techniques",
+        "events",
+        "news",
+        "tips"
+      ],
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "tags": {
+      "type": "json",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "relatedProducts": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::product.product"
+    },
+    "relatedCourses": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::course.course"
+    },
+    "seo": {
+      "type": "component",
+      "component": "seo.meta-data",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}
+
+=== src/api/product/content-types/product/schema.json ===
+{
+  "kind": "collectionType",
+  "collectionName": "products",
+  "info": {
+    "singularName": "product",
+    "pluralName": "products",
+    "displayName": "Product",
+    "description": "Chocolate products catalog"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name"
+    },
+    "description": {
+      "type": "blocks",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "images": {
+      "type": "component",
+      "component": "elements.product-image",
+      "repeatable": true,
+      "max": 5
+    },
+    "price": {
+      "type": "decimal",
+      "required": true
+    },
+    "currency": {
+      "type": "string",
+      "default": "MDL"
+    },
+    "category": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::category.category"
+    },
+    "ingredients": {
+      "type": "json",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "allergens": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "weight": {
+      "type": "string"
+    },
+    "availability": {
+      "type": "boolean",
+      "default": true
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "seo": {
+      "type": "component",
+      "component": "seo.meta-data",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}
+
+=== src/components/elements/card-item.json ===
+{
+  "collectionName": "components_elements_card_items",
+  "info": {
+    "displayName": "cardItem",
+    "description": "Versatile card component for services, testimonials, pricing"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "description": {
+      "type": "blocks",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "icon": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    },
+    "price": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "badge": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "features": {
+      "type": "component",
+      "component": "elements.highlights",
+      "repeatable": true
+    },
+    "ctaButton": {
+      "type": "component",
+      "component": "elements.cta-button"
+    },
+    "variant": {
+      "type": "enumeration",
+      "enum": [
+        "service",
+        "testimonial",
+        "pricing",
+        "benefit"
+      ],
+      "default": "service"
+    }
+  }
+}
+
+=== src/components/elements/contacts.json ===
+{
+  "collectionName": "components_elements_contacts",
+  "info": {
+    "displayName": "contacts"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "value": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
+
+
+=== src/components/elements/cta-button.json ===
+{
+  "collectionName": "components_elements_cta_buttons",
+  "info": {
+    "displayName": "ctaButton"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "href": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
+
+=== src/components/elements/faq-item.json ===
+{
+  "collectionName": "components_elements_faq_items",
+  "info": {
+    "displayName": "faqItem",
+    "description": "Single FAQ question and answer"
+  },
+  "options": {},
+  "attributes": {
+    "question": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "answer": {
+      "type": "blocks",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}
+
+=== src/components/elements/form-field.json ===
+{
+  "collectionName": "components_elements_form_fields",
+  "info": {
+    "displayName": "formField",
+    "description": "Dynamic form field configuration"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "text",
+        "email",
+        "tel",
+        "textarea",
+        "select",
+        "checkbox"
+      ],
+      "default": "text"
+    },
+    "placeholder": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "required": {
+      "type": "boolean",
+      "default": false
+    },
+    "options": {
+      "type": "json",
+      "description": "Options for select fields"
+    }
+  }
+}
+
+=== src/components/elements/highlights.json ===
+{
+  "collectionName": "components_elements_highlights",
+  "info": {
+    "displayName": "highlights"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  },
+  "config": {}
+}
+
+=== src/components/elements/image.json ===
+{
+  "collectionName": "components_elements_images",
+  "info": {
+    "displayName": "image",
+    "description": "Image with alt text and caption support"
+  },
+  "options": {},
+  "attributes": {
+    "media": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ],
+      "required": true
+    },
+    "alt": {
+      "type": "string",
+      "required": true,
+      "description": "Alternative text for accessibility",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "title": {
+      "type": "string",
+      "description": "Image title attribute",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "caption": {
+      "type": "string",
+      "description": "Image caption to display",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "lazyLoad": {
+      "type": "boolean",
+      "default": true
+    },
+    "link": {
+      "type": "string",
+      "description": "Optional link URL"
+    }
+  }
+}
+
+=== src/components/elements/legal-links.json ===
+{
+  "collectionName": "components_elements_legal_links",
+  "info": {
+    "displayName": "legalLinks"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "newTab": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "config": {}
+}
+
+
+=== src/components/elements/product-image.json ===
+{
+  "collectionName": "components_elements_product_images",
+  "info": {
+    "displayName": "productImage",
+    "description": "Specialized image component for chocolate products"
+  },
+  "options": {},
+  "attributes": {
+    "image": {
+      "type": "media",
+      "allowedTypes": [
+        "images"
+      ],
+      "required": true
+    },
+    "alt": {
+      "type": "string",
+      "required": true,
+      "default": "Handcrafted chocolate by DeliceMy"
+    },
+    "angle": {
+      "type": "enumeration",
+      "enum": [
+        "front",
+        "side",
+        "detail",
+        "packaging",
+        "ingredient"
+      ],
+      "default": "front"
+    },
+    "isPrimary": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}
+
+=== src/components/elements/section-header.json ===
+{
+  "collectionName": "components_elements_section_headers",
+  "info": {
+    "displayName": "sectionHeader",
+    "description": "Reusable section header with kicker, title, and subtitle"
+  },
+  "options": {},
+  "attributes": {
+    "kicker": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "subtitle": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "alignment": {
+      "type": "enumeration",
+      "enum": [
+        "left",
+        "center",
+        "right"
+      ],
+      "default": "center"
+    }
+  }
+}
+
+=== src/components/elements/social-link.json ===
+{
+  "collectionName": "components_elements_social_links",
+  "info": {
+    "displayName": "socialLink"
+  },
+  "options": {},
+  "attributes": {
+    "platform": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  },
+  "config": {}
+}
+
+
+=== src/components/navigation/menu-items.json ===
+{
+  "collectionName": "components_navigation_menu_items",
+  "info": {
+    "displayName": "menuItems"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "href": {
+      "type": "string"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "config": {}
+}
+
+
+=== src/components/sections/about.json ===
+{
+  "collectionName": "components_sections_abouts",
+  "info": {
+    "displayName": "about"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header"
+    },
+    "intro": {
+      "type": "blocks"
+    },
+    "listItem": {
+      "type": "component",
+      "component": "elements.highlights",
+      "repeatable": true
+    },
+    "portrait": {
+      "type": "component",
+      "component": "elements.image"
+    },
+    "ctaButton": {
+      "type": "component",
+      "component": "elements.cta-button",
+      "repeatable": false
+    }
+  }
+}
+
+=== src/components/sections/banner.json ===
+{
+  "collectionName": "components_sections_banners",
+  "info": {
+    "displayName": "banner",
+    "description": "Flexible banner section for CTAs and mission statements"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "description": {
+      "type": "blocks",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "variant": {
+      "type": "enumeration",
+      "enum": [
+        "cta",
+        "mission",
+        "hero",
+        "announcement"
+      ],
+      "default": "cta"
+    },
+    "layout": {
+      "type": "enumeration",
+      "enum": [
+        "left",
+        "center",
+        "right",
+        "split"
+      ],
+      "default": "center"
+    },
+    "background": {
+      "type": "component",
+      "component": "elements.image"
+    },
+    "foregroundImage": {
+      "type": "component",
+      "component": "elements.image",
+      "description": "Portrait or product image"
+    },
+    "signature": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ],
+      "description": "Signature image for personal touch"
+    },
+    "ctaButtons": {
+      "type": "component",
+      "component": "elements.cta-button",
+      "repeatable": true,
+      "max": 2
+    },
+    "theme": {
+      "type": "enumeration",
+      "enum": [
+        "light",
+        "dark",
+        "primary",
+        "secondary"
+      ],
+      "default": "light"
+    }
+  }
+}
+
+=== src/components/sections/benefits.json ===
+{
+  "collectionName": "components_sections_benefits",
+  "info": {
+    "displayName": "benefits"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header"
+    },
+    "items": {
+      "type": "component",
+      "component": "elements.card-item",
+      "repeatable": true
+    }
+  }
+}
+
+=== src/components/sections/contact-form.json ===
+{
+  "collectionName": "components_sections_contact_forms",
+  "info": {
+    "displayName": "contactForm",
+    "description": "Contact form section with customizable fields"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header"
+    },
+    "fields": {
+      "type": "component",
+      "component": "elements.form-field",
+      "repeatable": true
+    },
+    "submitButton": {
+      "type": "component",
+      "component": "elements.cta-button"
+    },
+    "successMessage": {
+      "type": "string",
+      "default": "Thank you for your message! We'll get back to you soon.",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "recipientEmail": {
+      "type": "email"
+    },
+    "consentText": {
+      "type": "string",
+      "default": "I agree to the processing of my personal data",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "enableHoneypot": {
+      "type": "boolean",
+      "default": true,
+      "description": "Enable honeypot spam protection"
+    },
+    "privacyPolicyLink": {
+      "type": "string",
+      "description": "Link to privacy policy page"
+    }
+  }
+}
+
+=== src/components/sections/faq.json ===
+{
+  "collectionName": "components_sections_faqs",
+  "info": {
+    "displayName": "faq",
+    "description": "Frequently asked questions section"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header"
+    },
+    "questions": {
+      "type": "component",
+      "component": "elements.faq-item",
+      "repeatable": true
+    }
+  }
+}
+
+=== src/components/sections/gallery.json ===
+{
+  "collectionName": "components_sections_galleries",
+  "info": {
+    "displayName": "gallery",
+    "description": "Image gallery section"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header"
+    },
+    "images": {
+      "type": "component",
+      "component": "elements.image",
+      "repeatable": true,
+      "max": 12
+    },
+    "layout": {
+      "type": "enumeration",
+      "enum": [
+        "grid",
+        "masonry",
+        "carousel",
+        "lightbox"
+      ],
+      "default": "grid"
+    },
+    "columns": {
+      "type": "integer",
+      "default": 3,
+      "min": 1,
+      "max": 6
+    }
+  }
+}
+
+=== src/components/sections/hero.json ===
+{
+  "collectionName": "components_sections_heroes",
+  "info": {
+    "displayName": "hero"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header",
+      "required": true
+    },
+    "personName": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    },
+    "background": {
+      "type": "component",
+      "component": "elements.image",
+      "required": true
+    },
+    "ctaButton": {
+      "type": "component",
+      "component": "elements.cta-button",
+      "repeatable": false,
+      "required": true
+    }
+  }
+}
+
+=== src/components/sections/services.json ===
+{
+  "collectionName": "components_sections_services",
+  "info": {
+    "displayName": "services"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header",
+      "required": true
+    },
+    "items": {
+      "type": "component",
+      "component": "elements.card-item",
+      "repeatable": true,
+      "required": true
+    }
+  }
+}
+
+=== src/components/sections/tariffs.json ===
+{
+  "collectionName": "components_sections_tariffs",
+  "info": {
+    "displayName": "tariffs"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header"
+    },
+    "items": {
+      "type": "component",
+      "component": "elements.card-item",
+      "repeatable": true
+    }
+  }
+}
+
+=== src/components/sections/testimonials.json ===
+{
+  "collectionName": "components_sections_testimonials",
+  "info": {
+    "displayName": "testimonials"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header"
+    },
+    "items": {
+      "type": "component",
+      "component": "elements.card-item",
+      "repeatable": true
+    }
+  }
+}
+
+=== src/components/seo/meta-data.json ===
+{
+  "collectionName": "components_seo_meta_data",
+  "info": {
+    "displayName": "metaData",
+    "description": "SEO metadata for pages"
+  },
+  "options": {},
+  "attributes": {
+    "metaTitle": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60
+    },
+    "metaDescription": {
+      "type": "text",
+      "maxLength": 160
+    },
+    "metaImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "keywords": {
+      "type": "text"
+    },
+    "structuredData": {
+      "type": "json"
+    },
+    "canonicalURL": {
+      "type": "string"
+    },
+    "robots": {
+      "type": "string",
+      "default": "index, follow"
+    }
+  }
+}

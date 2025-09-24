@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_elements_highlights",
+  "info": {
+    "displayName": "highlights"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  },
+  "config": {}
+}

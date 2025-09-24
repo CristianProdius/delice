@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_sections_testimonials",
+  "info": {
+    "displayName": "testimonials"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header",
+      "repeatable": false
+    },
+    "cardItem": {
+      "type": "component",
+      "component": "elements.service-item",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

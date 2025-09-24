@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_sections_faqs",
+  "info": {
+    "displayName": "faq",
+    "description": "Frequently asked questions section"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header"
+    },
+    "questions": {
+      "type": "component",
+      "component": "elements.faq-item",
+      "repeatable": true
+    }
+  }
+}

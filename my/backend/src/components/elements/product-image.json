@@ -1,0 +1,37 @@
+{
+  "collectionName": "components_elements_product_images",
+  "info": {
+    "displayName": "productImage",
+    "description": "Specialized image component for chocolate products"
+  },
+  "options": {},
+  "attributes": {
+    "image": {
+      "type": "media",
+      "allowedTypes": [
+        "images"
+      ],
+      "required": true
+    },
+    "alt": {
+      "type": "string",
+      "required": true,
+      "default": "Handcrafted chocolate by DeliceMy"
+    },
+    "angle": {
+      "type": "enumeration",
+      "enum": [
+        "front",
+        "side",
+        "detail",
+        "packaging",
+        "ingredient"
+      ],
+      "default": "front"
+    },
+    "isPrimary": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

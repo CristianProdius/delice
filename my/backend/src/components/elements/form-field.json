@@ -1,0 +1,51 @@
+{
+  "collectionName": "components_elements_form_fields",
+  "info": {
+    "displayName": "formField",
+    "description": "Dynamic form field configuration"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "text",
+        "email",
+        "tel",
+        "textarea",
+        "select",
+        "checkbox"
+      ],
+      "default": "text"
+    },
+    "placeholder": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "required": {
+      "type": "boolean",
+      "default": false
+    },
+    "options": {
+      "type": "json",
+      "description": "Options for select fields"
+    }
+  }
+}

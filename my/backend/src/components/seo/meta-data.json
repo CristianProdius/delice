@@ -1,0 +1,39 @@
+{
+  "collectionName": "components_seo_meta_data",
+  "info": {
+    "displayName": "metaData",
+    "description": "SEO metadata for pages"
+  },
+  "options": {},
+  "attributes": {
+    "metaTitle": {
+      "type": "string",
+      "required": true,
+      "maxLength": 60
+    },
+    "metaDescription": {
+      "type": "text",
+      "maxLength": 160
+    },
+    "metaImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "keywords": {
+      "type": "text"
+    },
+    "structuredData": {
+      "type": "json"
+    },
+    "canonicalURL": {
+      "type": "string"
+    },
+    "robots": {
+      "type": "string",
+      "default": "index, follow"
+    }
+  }
+}

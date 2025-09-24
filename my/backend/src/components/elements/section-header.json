@@ -1,0 +1,44 @@
+{
+  "collectionName": "components_elements_section_headers",
+  "info": {
+    "displayName": "sectionHeader",
+    "description": "Reusable section header with kicker, title, and subtitle"
+  },
+  "options": {},
+  "attributes": {
+    "kicker": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "subtitle": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "alignment": {
+      "type": "enumeration",
+      "enum": [
+        "left",
+        "center",
+        "right"
+      ],
+      "default": "center"
+    }
+  }
+}

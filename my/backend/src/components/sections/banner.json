@@ -1,0 +1,80 @@
+{
+  "collectionName": "components_sections_banners",
+  "info": {
+    "displayName": "banner",
+    "description": "Flexible banner section for CTAs and mission statements"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "description": {
+      "type": "blocks",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "variant": {
+      "type": "enumeration",
+      "enum": [
+        "cta",
+        "mission",
+        "hero",
+        "announcement"
+      ],
+      "default": "cta"
+    },
+    "layout": {
+      "type": "enumeration",
+      "enum": [
+        "left",
+        "center",
+        "right",
+        "split"
+      ],
+      "default": "center"
+    },
+    "background": {
+      "type": "component",
+      "component": "elements.image"
+    },
+    "foregroundImage": {
+      "type": "component",
+      "component": "elements.image",
+      "description": "Portrait or product image"
+    },
+    "signature": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ],
+      "description": "Signature image for personal touch"
+    },
+    "ctaButtons": {
+      "type": "component",
+      "component": "elements.cta-button",
+      "repeatable": true,
+      "max": 2
+    },
+    "theme": {
+      "type": "enumeration",
+      "enum": [
+        "light",
+        "dark",
+        "primary",
+        "secondary"
+      ],
+      "default": "light"
+    }
+  }
+}

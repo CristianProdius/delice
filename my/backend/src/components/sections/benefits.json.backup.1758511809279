@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_sections_benefits",
+  "info": {
+    "displayName": "benefits"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header"
+    },
+    "cardItem": {
+      "type": "component",
+      "component": "elements.card-item",
+      "repeatable": true
+    }
+  }
+}

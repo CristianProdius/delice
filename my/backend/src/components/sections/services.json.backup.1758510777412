@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_sections_services",
+  "info": {
+    "displayName": "services"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header",
+      "repeatable": false
+    },
+    "cardItem": {
+      "type": "component",
+      "component": "elements.service-item",
+      "repeatable": true,
+      "required": true
+    }
+  },
+  "config": {}
+}

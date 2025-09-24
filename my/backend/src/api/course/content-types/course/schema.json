@@ -1,0 +1,88 @@
+{
+  "kind": "collectionType",
+  "collectionName": "courses",
+  "info": {
+    "singularName": "course",
+    "pluralName": "courses",
+    "displayName": "Course",
+    "description": "Chocolate making courses and workshops"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title"
+    },
+    "description": {
+      "type": "blocks",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "duration": {
+      "type": "string"
+    },
+    "price": {
+      "type": "decimal",
+      "required": true
+    },
+    "maxParticipants": {
+      "type": "integer",
+      "default": 10
+    },
+    "schedule": {
+      "type": "json"
+    },
+    "skillLevel": {
+      "type": "enumeration",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ],
+      "default": "beginner"
+    },
+    "whatYouWillLearn": {
+      "type": "component",
+      "component": "elements.highlights",
+      "repeatable": true
+    },
+    "image": {
+      "type": "component",
+      "component": "elements.image"
+    },
+    "gallery": {
+      "type": "component",
+      "component": "elements.image",
+      "repeatable": true,
+      "max": 6
+    },
+    "seo": {
+      "type": "component",
+      "component": "seo.meta-data",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

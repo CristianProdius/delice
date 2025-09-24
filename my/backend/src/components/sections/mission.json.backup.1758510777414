@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_sections_missions",
+  "info": {
+    "displayName": "mission"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header",
+      "repeatable": false
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "background": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "ctaButton": {
+      "type": "component",
+      "component": "elements.cta-button",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

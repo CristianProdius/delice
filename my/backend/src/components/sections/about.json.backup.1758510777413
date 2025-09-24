@@ -1,0 +1,35 @@
+{
+  "collectionName": "components_sections_abouts",
+  "info": {
+    "displayName": "about"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header",
+      "repeatable": false
+    },
+    "intro": {
+      "type": "blocks"
+    },
+    "listItem": {
+      "type": "component",
+      "component": "elements.highlights",
+      "repeatable": true
+    },
+    "portrait": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "ctaButton": {
+      "type": "component",
+      "component": "elements.cta-button",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

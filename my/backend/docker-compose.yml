@@ -1,0 +1,37 @@
+services:
+  strapi:
+    build:
+      context: .
+      target: production
+    image: delice-strapi:latest
+    env_file:
+      - .env.docker
+    ports:
+      - "1337:1337"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./.tmp:/app/.tmp
+      - ./public/uploads:/app/public/uploads
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: strapi
+      POSTGRES_PASSWORD: strapi
+      POSTGRES_DB: strapi
+    ports:
+      - "5432:5432"
+    volumes:
+      - strapi-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  strapi-db-data:

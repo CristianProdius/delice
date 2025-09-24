@@ -1,0 +1,36 @@
+{
+  "collectionName": "components_sections_galleries",
+  "info": {
+    "displayName": "gallery",
+    "description": "Image gallery section"
+  },
+  "options": {},
+  "attributes": {
+    "header": {
+      "type": "component",
+      "component": "elements.section-header"
+    },
+    "images": {
+      "type": "component",
+      "component": "elements.image",
+      "repeatable": true,
+      "max": 12
+    },
+    "layout": {
+      "type": "enumeration",
+      "enum": [
+        "grid",
+        "masonry",
+        "carousel",
+        "lightbox"
+      ],
+      "default": "grid"
+    },
+    "columns": {
+      "type": "integer",
+      "default": 3,
+      "min": 1,
+      "max": 6
+    }
+  }
+}
