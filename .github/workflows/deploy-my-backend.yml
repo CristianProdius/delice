@@ -10,7 +10,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: CristianProdius/delice-my-strapi
+  IMAGE_NAME: cristianprodius/delice-my-strapi
 
 jobs:
   build-and-push:
