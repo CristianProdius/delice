@@ -60,4 +60,4 @@ Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/
 
 <sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
 # Deployment test
-# Deploy trigger Wed Sep 24 16:25:54 PDT 2025
+# Deploy trigger: Fix AWS_ENDPOINT and AWS_S3_BUCKET - Sun Sep 29
