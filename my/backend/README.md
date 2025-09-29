@@ -60,4 +60,4 @@ Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/
 
 <sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
 # Deployment test
-# Deploy trigger: Fix AWS_ENDPOINT and AWS_S3_BUCKET - Sun Sep 29
+# Deploy trigger: Use updated MY_PROJECT_ENV secret - Sun Sep 29 v2
