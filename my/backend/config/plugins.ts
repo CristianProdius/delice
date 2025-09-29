@@ -40,7 +40,7 @@ email: {
           region: env('AWS_REGION', 'auto'),
           forcePathStyle: env.bool('AWS_S3_FORCE_PATH_STYLE', true), // Safe default for R2
           params: {
-            Bucket: env('AWS_S3_BUCKET'),
+            Bucket: env('AWS_S3_BUCKET') || env('AWS_BUCKET'),
           },
         },
       },
