@@ -60,4 +60,4 @@ Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/
 
 <sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
 # Deployment test
-# Deploy trigger: Fix APP_KEYS format - Sun Sep 29 v3
+# Deploy trigger: Fix AWS credentials and bucket name - Sun Sep 29 v4
