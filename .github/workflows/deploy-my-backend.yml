@@ -70,18 +70,52 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            # Write env file from secret
-            cat > /tmp/.env << 'EOF'
+            set -e
+
+            # Navigate to project directory
+            cd /srv/clients/delice/my/cms
+
+            # Create .env file from secret
+            cat > .env << 'EOF'
             ${{ secrets.MY_PROJECT_ENV }}
             EOF
 
-            # Move to correct location with permissions
-            sudo mv /tmp/.env /srv/clients/delice/my/cms/.env
-            sudo chown strapi:strapi /srv/clients/delice/my/cms/.env
-            sudo chmod 600 /srv/clients/delice/my/cms/.env
+            # Verify .env was created correctly
+            if [ ! -s .env ]; then
+              echo "Error: .env file is empty or not created"
+              exit 1
+            fi
 
-            # Deploy
-            cd /srv/clients/delice/my/cms
-            sudo docker compose pull
-            sudo docker compose up -d
-            sudo docker system prune -f
+            echo ".env file created successfully ($(wc -l < .env) lines)"
+
+            # Pull latest image
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+            # Stop and remove old container
+            docker stop delice-my-cms 2>/dev/null || true
+            docker rm delice-my-cms 2>/dev/null || true
+
+            # Start new container
+            docker run -d \
+              --name delice-my-cms \
+              --network delice_network \
+              --restart unless-stopped \
+              -p 1337:1337 \
+              --env-file .env \
+              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+            # Wait for container to start
+            sleep 5
+
+            # Check container status
+            if docker ps | grep -q delice-my-cms; then
+              echo "Container started successfully"
+              docker logs --tail 20 delice-my-cms
+            else
+              echo "Container failed to start"
+              docker logs delice-my-cms
+              exit 1
+            fi
+
+            # Clean up old images
+            docker image prune -f

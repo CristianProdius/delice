@@ -4,10 +4,10 @@
 const axios = require('axios');
 
 // ====== CONFIG ======
-const STRAPI_URL = 'http://localhost:1337';           // <-- change if needed
+const STRAPI_URL = process.env.STRAPI_URL || 'http://localhost:1337';
 const API_TOKEN  = process.env.API_TOKEN;
-const LOCALE     = 'en';                              // <-- this run = English
-const AUTO_PUBLISH = true;                            // <-- set to false if you want drafts
+const LOCALE     = process.env.LOCALE || 'en';        // <-- this run = English
+const AUTO_PUBLISH = process.env.AUTO_PUBLISH !== 'false'; // <-- set to false if you want drafts
 
 // ====== AXIOS ======
 const headers = {

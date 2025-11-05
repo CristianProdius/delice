@@ -2,9 +2,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { Globe, ChevronDown } from "lucide-react";
-import { usePathname } from '@/i18n/routing';
+import { usePathname, Link } from '@/i18n/routing';
 import { useParams } from 'next/navigation';
-import Link from 'next/link';
 
 interface Language {
   code: string;

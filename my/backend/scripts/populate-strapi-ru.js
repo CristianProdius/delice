@@ -5,11 +5,11 @@
 const axios = require('axios');
 
 // ====== CONFIG ======
-const STRAPI_URL = 'http://localhost:1337';           // <-- change if needed
+const STRAPI_URL = process.env.STRAPI_URL || 'http://localhost:1337';
 const API_TOKEN  = process.env.API_TOKEN;
-const LOCALE     = 'ru';                              // <-- this run = Russian
+const LOCALE     = process.env.LOCALE || 'ru';        // <-- this run = Russian
 const SOURCE_LOCALE = 'en';                           // <-- source locale to create localizations from
-const AUTO_PUBLISH = true;                            // <-- set to false if you want drafts
+const AUTO_PUBLISH = process.env.AUTO_PUBLISH !== 'false'; // <-- set to false if you want drafts
 
 // ====== AXIOS ======
 const headers = {
@@ -112,14 +112,12 @@ async function localizePage({ slug, title, sections, seo }) {
       return { action: 'пропущено', slug, title };
     }
 
-    const sourcePage = sourcePages[0];
-    const sourceId = sourcePage.id || sourcePage.documentId;
-
     // Check if Russian localization already exists
     const ruQuery = `/pages?locale=${LOCALE}&filters[slug][$eq]=${encodeURIComponent(slug)}`;
     const ruPages = await api.get(ruQuery).then(r => r.data?.data ?? []).catch(() => []);
 
     const payload = {
+      slug,  // Important: must include slug to link localizations
       title,
       sections,
       seo,
@@ -129,13 +127,13 @@ async function localizePage({ slug, title, sections, seo }) {
 
     if (ruPages.length > 0) {
       // Update existing Russian localization
-      const ruId = ruPages[0].id || ruPages[0].documentId;
-      const res = await api.put(`/pages/${ruId}`, { data: payload });
+      const ruId = ruPages[0].documentId || ruPages[0].id;
+      const res = await api.put(`/pages/${ruId}?locale=${LOCALE}`, { data: payload });
       return { action: 'обновлено', id: ruId, title };
     } else {
-      // Create new Russian localization
-      const res = await api.post(`/pages/${sourceId}/localizations`, { ...payload });
-      return { action: 'создано', id: res.data.id || res.data.documentId, title };
+      // Create new Russian localization - Strapi 5 way
+      const res = await api.post(`/pages?locale=${LOCALE}`, { data: payload });
+      return { action: 'создано', id: res.data.data.documentId || res.data.data.id, title };
     }
   } catch (error) {
     console.error(`❌ Не удалось локализовать страницу "${title}":`, error.response?.data?.error || error.message);
@@ -166,14 +164,12 @@ async function localizeService({ slug, title, shortDescription, description, ico
       return { action: 'пропущено', slug, title };
     }
 
-    const sourceService = sourceServices[0];
-    const sourceId = sourceService.id || sourceService.documentId;
-
     // Check if Russian localization already exists
     const ruQuery = `/services?locale=${LOCALE}&filters[slug][$eq]=${encodeURIComponent(slug)}`;
     const ruServices = await api.get(ruQuery).then(r => r.data?.data ?? []).catch(() => []);
 
     const payload = {
+      slug,  // Important: must include slug to link localizations
       title,
       shortDescription,
       description,
@@ -186,13 +182,13 @@ async function localizeService({ slug, title, shortDescription, description, ico
 
     if (ruServices.length > 0) {
       // Update existing Russian localization
-      const ruId = ruServices[0].id || ruServices[0].documentId;
-      const res = await api.put(`/services/${ruId}`, { data: payload });
+      const ruId = ruServices[0].documentId || ruServices[0].id;
+      const res = await api.put(`/services/${ruId}?locale=${LOCALE}`, { data: payload });
       return { action: 'обновлено', id: ruId, title };
     } else {
-      // Create new Russian localization
-      const res = await api.post(`/services/${sourceId}/localizations`, { ...payload });
-      return { action: 'создано', id: res.data.id || res.data.documentId, title };
+      // Create new Russian localization - Strapi 5 way
+      const res = await api.post(`/services?locale=${LOCALE}`, { data: payload });
+      return { action: 'создано', id: res.data.data.documentId || res.data.data.id, title };
     }
   } catch (error) {
     console.error(`❌ Не удалось локализовать услугу "${title}":`, error.response?.data?.error || error.message);
@@ -221,9 +217,6 @@ async function localizePost(postData) {
       return { action: 'пропущено', slug: postData.slug, title: postData.title };
     }
 
-    const sourcePost = sourcePosts[0];
-    const sourceId = sourcePost.id || sourcePost.documentId;
-
     // Check if Russian localization already exists
     const ruQuery = `/posts?locale=${LOCALE}&filters[slug][$eq]=${encodeURIComponent(postData.slug)}`;
     const { data: ruData } = await api.get(ruQuery);
@@ -237,13 +230,13 @@ async function localizePost(postData) {
 
     if (ruPosts.length > 0) {
       // Update existing Russian localization
-      const ruId = ruPosts[0].id || ruPosts[0].documentId;
-      const res = await api.put(`/posts/${ruId}`, { data: payload });
+      const ruId = ruPosts[0].documentId || ruPosts[0].id;
+      const res = await api.put(`/posts/${ruId}?locale=${LOCALE}`, { data: payload });
       return { id: ruId, action: 'обновлено', data: res.data.data };
     } else {
-      // Create new Russian localization
-      const res = await api.post(`/posts/${sourceId}/localizations`, { ...payload });
-      return { id: res.data.id || res.data.documentId, action: 'создано', data: res.data };
+      // Create new Russian localization - Strapi 5 way
+      const res = await api.post(`/posts?locale=${LOCALE}`, { data: payload });
+      return { id: res.data.data.documentId || res.data.data.id, action: 'создано', data: res.data.data };
     }
   } catch (err) {
     console.error(`Ошибка локализации поста "${postData.title}":`, err?.response?.data || err.message);
@@ -1317,8 +1310,76 @@ async function createOrUpdatePairingPost() {
 
 // ====== HEADER & FOOTER ======
 
-// Note: For Header and Footer (single types), localizations work differently in Strapi v5
-// You'll need to handle these separately through the Strapi admin panel or adjust based on your setup
+// Header Single Type - Russian localization
+async function createOrUpdateHeader() {
+  try {
+    const headerData = {
+      ownerName: 'Олеся',
+      menuItems: [
+        { label: 'Главная', href: '/', isActive: false },
+        { label: 'Услуги', href: '/services', isActive: false },
+        { label: 'Школа', href: '/school', isActive: false },
+        { label: 'Магазин', href: '/shop', isActive: false },
+        { label: 'Блог', href: '/blog', isActive: false },
+        { label: 'О нас', href: '/about', isActive: false },
+        { label: 'Контакты', href: '/contact', isActive: false },
+      ],
+      ctaButton: cta('Записаться на курс', '/school')
+    };
+
+    const payload = {
+      data: {
+        ...headerData,
+        publishedAt: AUTO_PUBLISH ? new Date().toISOString() : null
+      }
+    };
+
+    // For single types with i18n, locale goes in query parameter
+    const res = await api.put(`/header?locale=${LOCALE}`, payload);
+    return { id: res.data.data.id || res.data.data.documentId, action: 'обновлено' };
+  } catch (err) {
+    console.error(`Ошибка обновления header:`, err?.response?.data || err.message);
+    throw err;
+  }
+}
+
+// Footer Single Type - Russian localization
+async function createOrUpdateFooter() {
+  try {
+    const footerData = {
+      address: 'Кишинёв, Молдова\nул. Пример 123',
+      contactItem: [
+        { label: 'Телефон', value: '+373 12 345 678' },
+        { label: 'Email', value: 'info@delicemy.md' },
+        { label: 'WhatsApp', value: '+373 12 345 678' }
+      ],
+      socialLink: [
+        { platform: 'Facebook', url: 'https://facebook.com/delicemy' },
+        { platform: 'Instagram', url: 'https://instagram.com/delicemy' },
+        { platform: 'TikTok', url: 'https://tiktok.com/@delicemy' }
+      ],
+      bottomNote: '© 2025 DeliceMy. Создано с любовью в Кишинёве.',
+      legalLinks: [
+        { label: 'Политика конфиденциальности', url: '/privacy-policy', newTab: false },
+        { label: 'Условия использования', url: '/terms', newTab: false }
+      ]
+    };
+
+    const payload = {
+      data: {
+        ...footerData,
+        publishedAt: AUTO_PUBLISH ? new Date().toISOString() : null
+      }
+    };
+
+    // For single types with i18n, locale goes in query parameter
+    const res = await api.put(`/footer?locale=${LOCALE}`, payload);
+    return { id: res.data.data.id || res.data.data.documentId, action: 'обновлено' };
+  } catch (err) {
+    console.error(`Ошибка обновления footer:`, err?.response?.data || err.message);
+    throw err;
+  }
+}
 
 // ====== RUN ======
 (async () => {
@@ -1438,7 +1499,24 @@ async function createOrUpdatePairingPost() {
     console.log(``);
     console.log(`📊 Посты блога: ${postSuccessCount}/${posts.length} успешно`);
 
-    console.log(`\n📝 ПРИМЕЧАНИЕ: Header и Footer (одиночные типы) нужно локализовать вручную через админ-панель Strapi.`);
+    // Localize Header & Footer
+    console.log(`\n🎨 Локализация Header и Footer...`);
+
+    try {
+      const headerResult = await createOrUpdateHeader();
+      console.log(`✅ Header: ${headerResult.action}`);
+    } catch (error) {
+      console.log(`❌ Header: Не удалось`);
+      console.error(`Ошибка:`, error?.response?.data || error.message);
+    }
+
+    try {
+      const footerResult = await createOrUpdateFooter();
+      console.log(`✅ Footer: ${footerResult.action}`);
+    } catch (error) {
+      console.log(`❌ Footer: Не удалось`);
+      console.error(`Ошибка:`, error?.response?.data || error.message);
+    }
 
     if (failedPages.length > 0 || failedServices.length > 0 || failedPosts.length > 0) {
       if (failedPages.length > 0) {
