@@ -1,5 +1,6 @@
 // populate-strapi-ru.js
 // Strapi v5 content seed for DeliceMy - Russian locale version
+// Uses Strapi's localization feature to add Russian translations
 
 const axios = require('axios');
 
@@ -7,6 +8,7 @@ const axios = require('axios');
 const STRAPI_URL = 'http://localhost:1337';           // <-- change if needed
 const API_TOKEN  = process.env.API_TOKEN;
 const LOCALE     = 'ru';                              // <-- this run = Russian
+const SOURCE_LOCALE = 'en';                           // <-- source locale to create localizations from
 const AUTO_PUBLISH = true;                            // <-- set to false if you want drafts
 
 // ====== AXIOS ======
@@ -98,34 +100,45 @@ async function testConnection() {
   }
 }
 
-// Upsert utility (find by slug+locale; create or update)
-async function upsertPage({ title, slug, sections, seo }) {
+// Localize utility - creates or updates a localization for an existing entry
+async function localizePage({ slug, title, sections, seo }) {
   try {
-    // Safer query with explicit ordering
-    const q = `/pages?locale=${encodeURIComponent(LOCALE)}&filters[slug][$eq]=${encodeURIComponent(slug)}`;
-    const found = await api.get(q).then(r => r.data?.data ?? []).catch(() => []);
+    // First, find the English (source) page by slug
+    const sourceQuery = `/pages?locale=${SOURCE_LOCALE}&filters[slug][$eq]=${encodeURIComponent(slug)}`;
+    const sourcePages = await api.get(sourceQuery).then(r => r.data?.data ?? []).catch(() => []);
+
+    if (sourcePages.length === 0) {
+      console.log(`⚠️  Исходная страница не найдена для slug: ${slug}`);
+      return { action: 'пропущено', slug, title };
+    }
+
+    const sourcePage = sourcePages[0];
+    const sourceId = sourcePage.id || sourcePage.documentId;
+
+    // Check if Russian localization already exists
+    const ruQuery = `/pages?locale=${LOCALE}&filters[slug][$eq]=${encodeURIComponent(slug)}`;
+    const ruPages = await api.get(ruQuery).then(r => r.data?.data ?? []).catch(() => []);
 
     const payload = {
-      data: {
-        title,
-        slug,
-        locale: LOCALE,
-        sections,
-        seo,
-        ...(AUTO_PUBLISH ? { publishedAt: new Date().toISOString() } : {})
-      }
+      title,
+      sections,
+      seo,
+      locale: LOCALE,
+      ...(AUTO_PUBLISH ? { publishedAt: new Date().toISOString() } : {})
     };
 
-    if (found.length > 0) {
-      const id = found[0].id;
-      const res = await api.put(`/pages/${id}`, payload);
-      return { action: 'обновлено', id: res.data.data.id, title };
+    if (ruPages.length > 0) {
+      // Update existing Russian localization
+      const ruId = ruPages[0].id || ruPages[0].documentId;
+      const res = await api.put(`/pages/${ruId}`, { data: payload });
+      return { action: 'обновлено', id: ruId, title };
     } else {
-      const res = await api.post('/pages', payload);
-      return { action: 'создано', id: res.data.data.id, title };
+      // Create new Russian localization
+      const res = await api.post(`/pages/${sourceId}/localizations`, { ...payload });
+      return { action: 'создано', id: res.data.id || res.data.documentId, title };
     }
   } catch (error) {
-    console.error(`❌ Не удалось обновить страницу "${title}":`, error.response?.data?.error || error.message);
+    console.error(`❌ Не удалось локализовать страницу "${title}":`, error.response?.data?.error || error.message);
 
     // Show detailed validation errors
     if (error.response?.data?.error?.details?.errors) {
@@ -133,12 +146,108 @@ async function upsertPage({ title, slug, sections, seo }) {
       error.response.data.error.details.errors.forEach((err, i) => {
         console.log(`   ${i + 1}. Поле: ${err.path ? err.path.join('.') : 'неизвестно'}`);
         console.log(`      Ошибка: ${err.message}`);
-        console.log(`      Имя: ${err.name || 'Н/Д'}`);
       });
       console.log('');
     }
 
     throw error;
+  }
+}
+
+// Localize service
+async function localizeService({ slug, title, shortDescription, description, icon, featured, order }) {
+  try {
+    // Find the English service
+    const sourceQuery = `/services?locale=${SOURCE_LOCALE}&filters[slug][$eq]=${encodeURIComponent(slug)}`;
+    const sourceServices = await api.get(sourceQuery).then(r => r.data?.data ?? []).catch(() => []);
+
+    if (sourceServices.length === 0) {
+      console.log(`⚠️  Исходная услуга не найдена для slug: ${slug}`);
+      return { action: 'пропущено', slug, title };
+    }
+
+    const sourceService = sourceServices[0];
+    const sourceId = sourceService.id || sourceService.documentId;
+
+    // Check if Russian localization already exists
+    const ruQuery = `/services?locale=${LOCALE}&filters[slug][$eq]=${encodeURIComponent(slug)}`;
+    const ruServices = await api.get(ruQuery).then(r => r.data?.data ?? []).catch(() => []);
+
+    const payload = {
+      title,
+      shortDescription,
+      description,
+      icon,
+      featured,
+      order,
+      locale: LOCALE,
+      ...(AUTO_PUBLISH ? { publishedAt: new Date().toISOString() } : {})
+    };
+
+    if (ruServices.length > 0) {
+      // Update existing Russian localization
+      const ruId = ruServices[0].id || ruServices[0].documentId;
+      const res = await api.put(`/services/${ruId}`, { data: payload });
+      return { action: 'обновлено', id: ruId, title };
+    } else {
+      // Create new Russian localization
+      const res = await api.post(`/services/${sourceId}/localizations`, { ...payload });
+      return { action: 'создано', id: res.data.id || res.data.documentId, title };
+    }
+  } catch (error) {
+    console.error(`❌ Не удалось локализовать услугу "${title}":`, error.response?.data?.error || error.message);
+    if (error.response?.data?.error?.details?.errors) {
+      console.log('\n📋 Детали ошибок валидации:');
+      error.response.data.error.details.errors.forEach((err, i) => {
+        console.log(`   ${i + 1}. Поле: ${err.path ? err.path.join('.') : 'неизвестно'}`);
+        console.log(`      Ошибка: ${err.message}`);
+      });
+      console.log('');
+    }
+    throw error;
+  }
+}
+
+// Localize post
+async function localizePost(postData) {
+  try {
+    // Find the English post
+    const sourceQuery = `/posts?locale=${SOURCE_LOCALE}&filters[slug][$eq]=${encodeURIComponent(postData.slug)}`;
+    const { data: sourceData } = await api.get(sourceQuery);
+    const sourcePosts = sourceData?.data ?? [];
+
+    if (sourcePosts.length === 0) {
+      console.log(`⚠️  Исходный пост не найден для slug: ${postData.slug}`);
+      return { action: 'пропущено', slug: postData.slug, title: postData.title };
+    }
+
+    const sourcePost = sourcePosts[0];
+    const sourceId = sourcePost.id || sourcePost.documentId;
+
+    // Check if Russian localization already exists
+    const ruQuery = `/posts?locale=${LOCALE}&filters[slug][$eq]=${encodeURIComponent(postData.slug)}`;
+    const { data: ruData } = await api.get(ruQuery);
+    const ruPosts = ruData?.data ?? [];
+
+    const payload = {
+      ...postData,
+      locale: LOCALE,
+      publishedAt: AUTO_PUBLISH ? new Date().toISOString() : null
+    };
+
+    if (ruPosts.length > 0) {
+      // Update existing Russian localization
+      const ruId = ruPosts[0].id || ruPosts[0].documentId;
+      const res = await api.put(`/posts/${ruId}`, { data: payload });
+      return { id: ruId, action: 'обновлено', data: res.data.data };
+    } else {
+      // Create new Russian localization
+      const res = await api.post(`/posts/${sourceId}/localizations`, { ...payload });
+      return { id: res.data.id || res.data.documentId, action: 'создано', data: res.data };
+    }
+  } catch (err) {
+    console.error(`Ошибка локализации поста "${postData.title}":`, err?.response?.data || err.message);
+    throw err;
   }
 }
 
@@ -307,7 +416,7 @@ async function createOrUpdateHome() {
     robots: `index, follow`,
   };
 
-  return upsertPage({ title: `Главная`, slug: `home`, sections, seo });
+  return localizePage({ slug: `home`, title: `Главная`, sections, seo });
 }
 
 // 2) SERVICES
@@ -464,7 +573,7 @@ async function createOrUpdateServices() {
     robots: `index, follow`,
   };
 
-  return upsertPage({ title: `Услуги`, slug: `services`, sections, seo });
+  return localizePage({ slug: `services`, title: `Услуги`, sections, seo });
 }
 
 // 3) ABOUT
@@ -556,7 +665,7 @@ async function createOrUpdateAbout() {
     robots: `index, follow`,
   };
 
-  return upsertPage({ title: `О нас`, slug: `about`, sections, seo });
+  return localizePage({ slug: `about`, title: `О нас`, sections, seo });
 }
 
 // 4) SCHOOL
@@ -677,7 +786,7 @@ async function createOrUpdateSchool() {
     robots: `index, follow`,
   };
 
-  return upsertPage({ title: `Школа`, slug: `school`, sections, seo });
+  return localizePage({ slug: `school`, title: `Школа`, sections, seo });
 }
 
 // 5) SHOP
@@ -753,7 +862,7 @@ async function createOrUpdateShop() {
     robots: `index, follow`,
   };
 
-  return upsertPage({ title: `Магазин`, slug: `shop`, sections, seo });
+  return localizePage({ slug: `shop`, title: `Магазин`, sections, seo });
 }
 
 // 6) CONTACT
@@ -826,7 +935,7 @@ async function createOrUpdateContact() {
     robots: `index, follow`,
   };
 
-  return upsertPage({ title: `Контакты`, slug: `contact`, sections, seo });
+  return localizePage({ slug: `contact`, title: `Контакты`, sections, seo });
 }
 
 // 7) BLOG
@@ -838,9 +947,6 @@ async function createOrUpdateBlog() {
       background: imageRef(MEDIA.hero_about, `Изготовление шоколада`),
       ctaButton: cta(`Изучить статьи`, `#posts`),
     },
-
-    // Note: The actual blog posts list is rendered by the frontend component
-    // This page just provides the hero section and any additional sections you want
 
     {
       __component: 'sections.banner',
@@ -862,52 +968,10 @@ async function createOrUpdateBlog() {
     robots: `index, follow`,
   };
 
-  return upsertPage({ title: `Блог`, slug: `blog`, sections, seo });
+  return localizePage({ slug: `blog`, title: `Блог`, sections, seo });
 }
 
 // ====== SERVICES (Individual Service Entries) ======
-
-// Upsert utility for Services
-async function upsertService({ title, slug, shortDescription, description, icon, featured, order }) {
-  try {
-    const q = `/services?locale=${encodeURIComponent(LOCALE)}&filters[slug][$eq]=${encodeURIComponent(slug)}`;
-    const found = await api.get(q).then(r => r.data?.data ?? []).catch(() => []);
-
-    const payload = {
-      data: {
-        title,
-        slug,
-        locale: LOCALE,
-        shortDescription,
-        description,
-        icon,
-        featured,
-        order,
-        ...(AUTO_PUBLISH ? { publishedAt: new Date().toISOString() } : {})
-      }
-    };
-
-    if (found.length > 0) {
-      const id = found[0].id;
-      const res = await api.put(`/services/${id}`, payload);
-      return { action: 'обновлено', id: res.data.data.id, title };
-    } else {
-      const res = await api.post('/services', payload);
-      return { action: 'создано', id: res.data.data.id, title };
-    }
-  } catch (error) {
-    console.error(`❌ Не удалось обновить услугу "${title}":`, error.response?.data?.error || error.message);
-    if (error.response?.data?.error?.details?.errors) {
-      console.log('\n📋 Детали ошибок валидации:');
-      error.response.data.error.details.errors.forEach((err, i) => {
-        console.log(`   ${i + 1}. Поле: ${err.path ? err.path.join('.') : 'неизвестно'}`);
-        console.log(`      Ошибка: ${err.message}`);
-      });
-      console.log('');
-    }
-    throw error;
-  }
-}
 
 // 1) Chocolate School for Adults
 async function createOrUpdateAdultSchoolService() {
@@ -927,7 +991,7 @@ async function createOrUpdateAdultSchoolService() {
     p('Авторские наборы и пошаговые руководства помогут вам создавать настоящие шоколадные шедевры и построить успешный шоколадный бизнес.')
   ];
 
-  return upsertService({
+  return localizeService({
     title: 'Шоколадная школа для взрослых (новички и профи)',
     slug: 'chocolate-school-adults',
     shortDescription: 'Индивидуальные и групповые занятия для любителей и профессиональных кондитеров. Изучите секреты темперирования, создавайте плитки, драже, конфеты и эффектное шоколадное декорирование.',
@@ -954,7 +1018,7 @@ async function createOrUpdateChildrensSchoolService() {
     p('Каждый мастер-класс создан для создания долговременных воспоминаний, обучая детей увлекательному миру изготовления шоколада. Идеально для дней рождения, школьных групп или просто весёлого дня!')
   ];
 
-  return upsertService({
+  return localizeService({
     title: 'Детская шоколадная школа',
     slug: 'childrens-chocolate-school',
     shortDescription: 'Весёлые практические занятия знакомят детей с миром шоколада через творчество и игру. Безопасные мастер-классы, которые оставляют долговременные воспоминания!',
@@ -982,7 +1046,7 @@ async function createOrUpdateHoRecaService() {
     p('Мы делаем ваши десерты незабываемыми, помогая вам выделиться на конкурентном рынке и создавать запоминающиеся впечатления, которые заставляют гостей возвращаться.')
   ];
 
-  return upsertService({
+  return localizeService({
     title: 'Консалтинг для HoReCa',
     slug: 'horeca-consulting',
     shortDescription: 'Увеличьте доход и привлеките гостей, добавив фирменные шоколадные изделия в ваше меню. Мы делаем ваши десерты незабываемыми, настраиваем шоколадные бары и создаём подробные производственные карты.',
@@ -1010,7 +1074,7 @@ async function createOrUpdateTastingsEventsService() {
     p('Каждое мероприятие настроено под ваши предпочтения, размер группы и случай. Мы приносим магию премиального шоколада, чтобы создать запоминающиеся моменты, которые ваши гости будут ценить.')
   ];
 
-  return upsertService({
+  return localizeService({
     title: 'Дегустации и мероприятия',
     slug: 'tastings-events',
     shortDescription: 'Тематические впечатления для частных вечеринок и корпоративных встреч — превратите любой случай в незабываемое празднование с премиум дегустациями шоколада и мастер-классами.',
@@ -1038,7 +1102,7 @@ async function createOrUpdateDessertMoldDesignService() {
     p('От концепции до создания мы тесно работаем с вами, чтобы проектировать и производить эксклюзивные шоколадные элементы, которые делают ваши десерты по-настоящему уникальными и демонстрируют отличительный стиль вашего бренда.')
   ];
 
-  return upsertService({
+  return localizeService({
     title: 'Дизайн десертов и форм',
     slug: 'dessert-mold-design',
     shortDescription: 'Индивидуальное шоколадное декорирование и формы на заказ для вашего меню. Создавайте эксклюзивные десерты, которые демонстрируют стиль вашего бренда.',
@@ -1067,7 +1131,7 @@ async function createOrUpdateCustomGiftsService() {
     p('Каждое изделие с любовью создано вручную из премиальных ингредиентов, обеспечивая, что ваши персонализированные шоколадные творения оставят долговременное впечатление.')
   ];
 
-  return upsertService({
+  return localizeService({
     title: 'Индивидуальные шоколадные подарки',
     slug: 'custom-chocolate-gifts',
     shortDescription: 'Наборы ручной работы, шоколадные открытки и визитки, плюс декор для ваших десертов — идеально для того, чтобы сделать любой момент особенным.',
@@ -1079,37 +1143,10 @@ async function createOrUpdateCustomGiftsService() {
 }
 
 // ====== BLOG POSTS ======
-// Upsert function for blog posts
-async function upsertPost(postData) {
-  try {
-    // Check if post exists by slug
-    const { data: existing } = await api.get(`/posts?filters[slug][$eq]=${postData.slug}&locale=${LOCALE}`);
-
-    const payload = {
-      data: {
-        ...postData,
-        locale: LOCALE,
-        publishedAt: AUTO_PUBLISH ? new Date().toISOString() : null
-      }
-    };
-
-    if (existing && existing.length > 0) {
-      const id = existing[0].id;
-      const res = await api.put(`/posts/${id}`, payload);
-      return { id, action: 'обновлено', data: res.data.data };
-    } else {
-      const res = await api.post('/posts', payload);
-      return { id: res.data.data.id, action: 'создано', data: res.data.data };
-    }
-  } catch (err) {
-    console.error(`Ошибка обновления поста "${postData.title}":`, err?.response?.data || err.message);
-    throw err;
-  }
-}
 
 // Blog Post 1: The Art of Tempering Chocolate
 async function createOrUpdateTemperingPost() {
-  return upsertPost({
+  return localizePost({
     title: 'Искусство темперирования шоколада: полное руководство',
     slug: 'art-of-tempering-chocolate',
     excerpt: 'Освойте технику темперирования шоколада для достижения идеального глянцевого покрытия и приятного хруста. Изучите науку и методы этого важного навыка.',
@@ -1129,7 +1166,7 @@ async function createOrUpdateTemperingPost() {
         'Продлевает срок хранения шоколадных изделий'
       ]),
       h(2, 'Наука темперирования'),
-      p('Шоколад содержит какао-масло, которое может кристаллизоваться в нескольких формах. Темперирование способствует образованию стабильных кристаллов (форма V), которые придают шоколаду желаемые свойства. Когда вы расплавляете шоколад, вы разрушаете эти кристаллы, и темперирование помогает переформировать их в правильную структуру.'),
+      p('Шоколад содержит какао-масло, которое может кристаллизоваться в нескольких формах. Темперирование способствует образованию стабильных кристаллов (форма V), которые придают шоколаду желаемые свойства. Когда вы расплавляете шоколад, ��ы разрушаете эти кристаллы, и темперирование помогает переформировать их в правильную структуру.'),
       h(2, 'Три метода темперирования'),
       h(3, '1. Метод засева (рекомендуется для новичков)'),
       p('Это самый простой метод для домашних шоколатье. Расплавьте 2/3 вашего шоколада до 45-50°C, затем добавьте оставшуюся 1/3 в качестве "семени" для охлаждения до рабочей температуры (31-32°C для тёмного шоколада).'),
@@ -1144,7 +1181,7 @@ async function createOrUpdateTemperingPost() {
         'Белый шоколад: расплавить до 40°C, охладить до 25°C, подогреть до 28-29°C'
       ]),
       h(2, 'Тестирование темперирования'),
-      p('Окуните кончик ножа в темперированный шоколад и дайте застыть при комнатной температуре (18-20°C). Он должен затвер��еть в течение 3-5 минут с глянцевым покрытием и без разводов. Если это занимает больше времени или выглядит тускло, шоколад не правильно темперирован.'),
+      p('Окуните кончик ножа в темперированный шоколад и дайте застыть при комнатной температуре (18-20°C). Он должен затвердеть в течение 3-5 минут с глянцевым покрытием и без разводов. Если это занимает больше времени или выглядит тускло, шоколад не правильно темперирован.'),
       h(2, 'Распространённые ошибки'),
       ul([
         'Перегрев шоколада (разрушает структуру какао-масла)',
@@ -1159,11 +1196,8 @@ async function createOrUpdateTemperingPost() {
   });
 }
 
-// Note: Due to length, I'll create shortened Russian versions of the remaining blog posts
-// You can expand them as needed
-
 async function createOrUpdateEasyDessertsPost() {
-  return upsertPost({
+  return localizePost({
     title: '5 простых шоколадных десертов, которые может приготовить каждый',
     slug: '5-easy-chocolate-desserts',
     excerpt: 'Впечатлите друзей и семью этими простыми, но вкусными шоколадными десертами. Продвинутые навыки не требуются — только качественный шоколад и любовь к сладкому!',
@@ -1191,7 +1225,7 @@ async function createOrUpdateEasyDessertsPost() {
 }
 
 async function createOrUpdateChoosingChocolatePost() {
-  return upsertPost({
+  return localizePost({
     title: 'Как выбрать правильный шоколад для ваших рецептов',
     slug: 'choosing-right-chocolate',
     excerpt: 'Не весь шоколад одинаков. Узнайте, как выбрать идеальный шоколад для выпечки, темперирования и употребления.',
@@ -1211,7 +1245,7 @@ async function createOrUpdateChoosingChocolatePost() {
 }
 
 async function createOrUpdateSchoolBehindScenesPost() {
-  return upsertPost({
+  return localizePost({
     title: 'За кулисами: день в нашей шоколадной школе',
     slug: 'behind-scenes-chocolate-school',
     excerpt: 'Интересно, что происходит на наших занятиях в шоколадной школе? Присоединяйтесь к виртуальному туру типичного дня занятий.',
@@ -1236,7 +1270,7 @@ async function createOrUpdateSchoolBehindScenesPost() {
 }
 
 async function createOrUpdateGiftIdeasPost() {
-  return upsertPost({
+  return localizePost({
     title: 'Креативные идеи шоколадных подарков для любого случая',
     slug: 'chocolate-gift-ideas',
     excerpt: 'Выйдите за рамки обычной коробки шоколада. Откройте уникальные, персонализированные идеи шоколадных подарков.',
@@ -1258,7 +1292,7 @@ async function createOrUpdateGiftIdeasPost() {
 }
 
 async function createOrUpdatePairingPost() {
-  return upsertPost({
+  return localizePost({
     title: 'Сочетание шоколада и вина: изысканный гид',
     slug: 'chocolate-wine-pairing',
     excerpt: 'Улучшите ваш опыт дегустации, сочетая шоколад с вином. Узнайте, какие комбинации работают красиво и почему.',
@@ -1283,82 +1317,13 @@ async function createOrUpdatePairingPost() {
 
 // ====== HEADER & FOOTER ======
 
-// Header Single Type
-async function createOrUpdateHeader() {
-  try {
-    const headerData = {
-      ownerName: 'Олеся',
-      menuItems: [
-        { label: 'Главная', href: '/', isActive: false },
-        { label: 'Услуги', href: '/services', isActive: false },
-        { label: 'Школа', href: '/school', isActive: false },
-        { label: 'Магазин', href: '/shop', isActive: false },
-        { label: 'Блог', href: '/blog', isActive: false },
-        { label: 'О нас', href: '/about', isActive: false },
-        { label: 'Контакты', href: '/contact', isActive: false },
-      ],
-      ctaButton: cta('Забронировать занятие', '/school')
-    };
-
-    const payload = {
-      data: {
-        ...headerData,
-        locale: LOCALE,
-        publishedAt: AUTO_PUBLISH ? new Date().toISOString() : null
-      }
-    };
-
-    // For single types, just PUT without checking if exists
-    const res = await api.put('/header', payload);
-    return { id: res.data.data.id || res.data.data.documentId, action: 'обновлено' };
-  } catch (err) {
-    console.error(`Ошибка обновления заголовка:`, err?.response?.data || err.message);
-    throw err;
-  }
-}
-
-// Footer Single Type
-async function createOrUpdateFooter() {
-  try {
-    const footerData = {
-      address: 'Кишинёв, Молдова\nул. Пример 123',
-      contactItem: [
-        { label: 'Телефон', value: '+373 12 345 678' },
-        { label: 'Email', value: 'info@delicemy.md' },
-        { label: 'WhatsApp', value: '+373 12 345 678' }
-      ],
-      socialLink: [
-        { platform: 'Facebook', url: 'https://facebook.com/delicemy' },
-        { platform: 'Instagram', url: 'https://instagram.com/delicemy' },
-        { platform: 'TikTok', url: 'https://tiktok.com/@delicemy' }
-      ],
-      bottomNote: '© 2025 DeliceMy. Создано с любовью в Кишинёве.',
-      legalLinks: [
-        { label: 'Политика конфиденциальности', url: '/privacy-policy', newTab: false },
-        { label: 'Условия обслуживания', url: '/terms', newTab: false }
-      ]
-    };
-
-    const payload = {
-      data: {
-        ...footerData,
-        publishedAt: AUTO_PUBLISH ? new Date().toISOString() : null
-      }
-    };
-
-    // For single types, just PUT without checking if exists
-    const res = await api.put('/footer', payload);
-    return { id: res.data.data.id || res.data.data.documentId, action: 'обновлено' };
-  } catch (err) {
-    console.error(`Ошибка обновления подвала:`, err?.response?.data || err.message);
-    throw err;
-  }
-}
+// Note: For Header and Footer (single types), localizations work differently in Strapi v5
+// You'll need to handle these separately through the Strapi admin panel or adjust based on your setup
 
 // ====== RUN ======
 (async () => {
   try {
-    console.log(`🍫 Заполнение контента DeliceMy (локаль: ${LOCALE})…`);
+    console.log(`🍫 Локализация контента DeliceMy (${SOURCE_LOCALE} → ${LOCALE})…`);
     console.log(`📌 Используется Strapi URL: ${STRAPI_URL}`);
     console.log(`📝 Автопубликация: ${AUTO_PUBLISH ? 'Да' : 'Нет (черновики)'}`);
     console.log(``);
@@ -1373,7 +1338,7 @@ async function createOrUpdateFooter() {
       process.exit(1);
     }
 
-    console.log(`\n📄 Создание/обновление страниц...`);
+    console.log(`\n📄 Локализация страниц...`);
 
     // Run each page separately with error handling
     const pages = [
@@ -1392,8 +1357,12 @@ async function createOrUpdateFooter() {
     for (const page of pages) {
       try {
         const result = await page.fn();
-        console.log(`✅ ${page.name}: ${result.action} (ID: ${result.id})`);
-        successCount++;
+        if (result.action !== 'пропущено') {
+          console.log(`✅ ${page.name}: ${result.action}`);
+          successCount++;
+        } else {
+          console.log(`⏭️  ${page.name}: ${result.action} (исходная страница не найдена)`);
+        }
       } catch (error) {
         console.log(`❌ ${page.name}: Не удалось`);
         failedPages.push(page.name);
@@ -1403,8 +1372,8 @@ async function createOrUpdateFooter() {
     console.log(``);
     console.log(`📊 Страницы: ${successCount}/${pages.length} успешно`);
 
-    // Create individual Service entries
-    console.log(`\n🎯 Создание/обновление отдельных услуг...`);
+    // Localize individual Service entries
+    console.log(`\n🎯 Локализация услуг...`);
 
     const services = [
       { name: `Шоколадная школа для взрослых`, fn: createOrUpdateAdultSchoolService },
@@ -1421,8 +1390,12 @@ async function createOrUpdateFooter() {
     for (const service of services) {
       try {
         const result = await service.fn();
-        console.log(`✅ ${service.name}: ${result.action} (ID: ${result.id})`);
-        serviceSuccessCount++;
+        if (result.action !== 'пропущено') {
+          console.log(`✅ ${service.name}: ${result.action}`);
+          serviceSuccessCount++;
+        } else {
+          console.log(`⏭️  ${service.name}: ${result.action}`);
+        }
       } catch (error) {
         console.log(`❌ ${service.name}: Не удалось`);
         failedServices.push(service.name);
@@ -1432,8 +1405,8 @@ async function createOrUpdateFooter() {
     console.log(``);
     console.log(`📊 Услуги: ${serviceSuccessCount}/${services.length} успешно`);
 
-    // Create Blog Posts
-    console.log(`\n📝 Создание/обновление постов блога...`);
+    // Localize Blog Posts
+    console.log(`\n📝 Локализация постов блога...`);
 
     const posts = [
       { name: `Искусство темперирования шоколада`, fn: createOrUpdateTemperingPost },
@@ -1450,8 +1423,12 @@ async function createOrUpdateFooter() {
     for (const post of posts) {
       try {
         const result = await post.fn();
-        console.log(`✅ ${post.name}: ${result.action} (ID: ${result.id})`);
-        postSuccessCount++;
+        if (result.action !== 'пропущено') {
+          console.log(`✅ ${post.name}: ${result.action}`);
+          postSuccessCount++;
+        } else {
+          console.log(`⏭️  ${post.name}: ${result.action}`);
+        }
       } catch (error) {
         console.log(`❌ ${post.name}: Не удалось`);
         failedPosts.push(post.name);
@@ -1461,22 +1438,7 @@ async function createOrUpdateFooter() {
     console.log(``);
     console.log(`📊 Посты блога: ${postSuccessCount}/${posts.length} успешно`);
 
-    // Create/Update Header and Footer
-    console.log(`\n🎨 Создание/обновление Заголовка и Подвала...`);
-
-    try {
-      const headerResult = await createOrUpdateHeader();
-      console.log(`✅ Заголовок: ${headerResult.action}`);
-    } catch (error) {
-      console.log(`❌ Заголовок: Не удалось`);
-    }
-
-    try {
-      const footerResult = await createOrUpdateFooter();
-      console.log(`✅ Подвал: ${footerResult.action}`);
-    } catch (error) {
-      console.log(`❌ Подвал: Не удалось`);
-    }
+    console.log(`\n📝 ПРИМЕЧАНИЕ: Header и Footer (одиночные типы) нужно локализовать вручную через админ-панель Strapi.`);
 
     if (failedPages.length > 0 || failedServices.length > 0 || failedPosts.length > 0) {
       if (failedPages.length > 0) {
@@ -1488,28 +1450,14 @@ async function createOrUpdateFooter() {
       if (failedPosts.length > 0) {
         console.log(`⚠️  Не удалось постов блога: ${failedPosts.join(', ')}`);
       }
-      console.log(`   Проверьте ошибки выше и убедитесь:`);
-      console.log(`   - Все необходимые ID медиа существуют`);
-      console.log(`   - Схемы компонентов точно совпадают`);
-      console.log(`   - Типы контента Services и Post правильно созданы`);
     } else {
-      console.log(`🎉 Все страницы, услуги и посты блога созданы/обновлены успешно!`);
+      console.log(`🎉 Все русские локализации созданы/обновлены успешно!`);
     }
 
-    console.log(``);
-    console.log(`📝 ВАЖНЫЕ СЛЕДУЮЩИЕ ШАГИ:`);
-    console.log(`1. Загрузите изображения в библиотеку медиа и замените ID MEDIA (строки 82-99)`);
-    console.log(`2. Обновите контактную информацию:`);
-    console.log(`   - Замените номера телефонов (поиск: +37312345678)`);
-    console.log(`   - Замените email (поиск: @delicemy.md)`);
-    console.log(`3. Настройте одиночные типы Header и Footer в админке Strapi`);
-    console.log(`4. Создайте записи Product, если используете сетку продуктов`);
-    console.log(`5. Протестируйте все формы и настройте конфигурации полей`);
-
     if (AUTO_PUBLISH) {
-      console.log(`\n✨ Страницы опубликованы и доступны!`);
+      console.log(`\n✨ Локализации опубликованы и доступны!`);
     } else {
-      console.log(`\n📋 Страницы созданы как черновики. Опубликуйте их в админке Strapi когда готово.`);
+      console.log(`\n📋 Локализации созданы как черновики. Опубликуйте их в админке Strapi когда готово.`);
     }
 
   } catch (err) {
