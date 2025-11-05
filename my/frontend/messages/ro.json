@@ -1,0 +1,15 @@
+{
+  "nav": {
+    "home": "Acasă",
+    "about": "Despre",
+    "services": "Servicii",
+    "school": "Școală",
+    "shop": "Magazin",
+    "blog": "Blog",
+    "contact": "Contact"
+  },
+  "common": {
+    "loading": "Se încarcă...",
+    "error": "Ceva nu a mers bine"
+  }
+}

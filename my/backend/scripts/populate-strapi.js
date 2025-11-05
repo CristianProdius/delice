@@ -10,12 +10,18 @@ const LOCALE     = 'en';                              // <-- this run = English
 const AUTO_PUBLISH = true;                            // <-- set to false if you want drafts
 
 // ====== AXIOS ======
+const headers = {
+  'Content-Type': 'application/json'
+};
+
+// Only add authorization if API_TOKEN is provided
+if (API_TOKEN) {
+  headers.Authorization = `Bearer ${API_TOKEN}`;
+}
+
 const api = axios.create({
   baseURL: `${STRAPI_URL}/api`,
-  headers: { 
-    Authorization: `Bearer ${API_TOKEN}`,
-    'Content-Type': 'application/json'
-  },
+  headers,
   timeout: 30000, // 30 second timeout
 });
 
@@ -42,9 +48,26 @@ api.interceptors.response.use(
 
 // ====== HELPERS ======
 // Blocks: paragraph node - Strapi v5 requires proper inline nodes
-const p = (text) => ({ 
-  type: 'paragraph', 
-  children: [{ type: 'text', text }] 
+const p = (text) => ({
+  type: 'paragraph',
+  children: [{ type: 'text', text }]
+});
+
+// Blocks: heading node
+const h = (level, text) => ({
+  type: 'heading',
+  level,
+  children: [{ type: 'text', text }]
+});
+
+// Blocks: list node
+const ul = (items) => ({
+  type: 'list',
+  format: 'unordered',
+  children: items.map(item => ({
+    type: 'list-item',
+    children: [{ type: 'text', text: item }]
+  }))
 });
 
 // Section header component
@@ -315,7 +338,7 @@ async function createOrUpdateServices() {
           price: `From 800 MDL per session`,
           variant: `service`,
           badge: `Most Popular`,
-          ctaButton: cta(`View Schedule`, `/school`),
+          ctaButton: cta(`Learn More`, `/services/chocolate-school-adults`),
         },
         {
           title: `Children's Chocolate School`,
@@ -330,7 +353,7 @@ async function createOrUpdateServices() {
           ],
           price: `From 400 MDL per child`,
           variant: `service`,
-          ctaButton: cta(`Book Kids Workshop`, `/contact`),
+          ctaButton: cta(`Learn More`, `/services/childrens-chocolate-school`),
         },
         {
           title: `HoReCa Consulting`,
@@ -346,7 +369,7 @@ async function createOrUpdateServices() {
           price: `Custom pricing`,
           variant: `service`,
           badge: `For Business`,
-          ctaButton: cta(`Schedule Consultation`, `/contact`),
+          ctaButton: cta(`Learn More`, `/services/horeca-consulting`),
         },
         {
           title: `Tastings & Events`,
@@ -361,7 +384,7 @@ async function createOrUpdateServices() {
           ],
           price: `From 5000 MDL per event`,
           variant: `service`,
-          ctaButton: cta(`Plan Your Event`, `/contact`),
+          ctaButton: cta(`Learn More`, `/services/tastings-events`),
         },
         {
           title: `Dessert & Mold Design`,
@@ -376,7 +399,7 @@ async function createOrUpdateServices() {
           ],
           price: `Project-based pricing`,
           variant: `service`,
-          ctaButton: cta(`Start Design Project`, `/contact`),
+          ctaButton: cta(`Learn More`, `/services/dessert-mold-design`),
         },
         {
           title: `Custom Chocolate Gifts`,
@@ -392,7 +415,7 @@ async function createOrUpdateServices() {
           price: `From 200 MDL`,
           variant: `service`,
           badge: `Best Seller`,
-          ctaButton: cta(`Order Custom Gift`, `/contact`),
+          ctaButton: cta(`Learn More`, `/services/custom-chocolate-gifts`),
         },
       ],
     },
@@ -806,6 +829,657 @@ async function createOrUpdateContact() {
   return upsertPage({ title: `Contact`, slug: `contact`, sections, seo });
 }
 
+// 7) BLOG
+async function createOrUpdateBlog() {
+  const sections = [
+    {
+      __component: 'sections.hero',
+      header: sectionHeader(`Our Blog`, `Chocolate Stories & Tips`, `Discover recipes, techniques, and behind-the-scenes stories from our chocolate atelier`),
+      background: imageRef(MEDIA.hero_about, `Chocolate making`),
+      ctaButton: cta(`Explore Articles`, `#posts`),
+    },
+
+    // Note: The actual blog posts list is rendered by the frontend component
+    // This page just provides the hero section and any additional sections you want
+
+    {
+      __component: 'sections.banner',
+      header: sectionHeader(``, `Want to Learn More?`, ``),
+      description: [p(`Join our chocolate school classes and master these techniques in person!`)],
+      variant: `cta`,
+      layout: `center`,
+      theme: `primary`,
+      ctaButtons: [
+        cta(`View Classes`, `/school`),
+        cta(`Contact Us`, `/contact`)
+      ],
+    },
+  ];
+
+  const seo = {
+    metaTitle: `Blog - Chocolate Tips & Stories | DeliceMy`,
+    metaDescription: `Discover chocolate-making techniques, recipes, and stories from our atelier in Chisinau.`,
+    robots: `index, follow`,
+  };
+
+  return upsertPage({ title: `Blog`, slug: `blog`, sections, seo });
+}
+
+// ====== SERVICES (Individual Service Entries) ======
+
+// Upsert utility for Services
+async function upsertService({ title, slug, shortDescription, description, icon, featured, order }) {
+  try {
+    const q = `/services?locale=${encodeURIComponent(LOCALE)}&filters[slug][$eq]=${encodeURIComponent(slug)}`;
+    const found = await api.get(q).then(r => r.data?.data ?? []).catch(() => []);
+
+    const payload = {
+      data: {
+        title,
+        slug,
+        locale: LOCALE,
+        shortDescription,
+        description,
+        icon,
+        featured,
+        order,
+        ...(AUTO_PUBLISH ? { publishedAt: new Date().toISOString() } : {})
+      }
+    };
+
+    if (found.length > 0) {
+      const id = found[0].id;
+      const res = await api.put(`/services/${id}`, payload);
+      return { action: 'updated', id: res.data.data.id, title };
+    } else {
+      const res = await api.post('/services', payload);
+      return { action: 'created', id: res.data.data.id, title };
+    }
+  } catch (error) {
+    console.error(`❌ Failed to upsert service "${title}":`, error.response?.data?.error || error.message);
+    if (error.response?.data?.error?.details?.errors) {
+      console.log('\n📋 Validation errors detail:');
+      error.response.data.error.details.errors.forEach((err, i) => {
+        console.log(`   ${i + 1}. Field: ${err.path ? err.path.join('.') : 'unknown'}`);
+        console.log(`      Error: ${err.message}`);
+      });
+      console.log('');
+    }
+    throw error;
+  }
+}
+
+// 1) Chocolate School for Adults
+async function createOrUpdateAdultSchoolService() {
+  const description = [
+    h(2, 'Master the Art of Chocolate'),
+    p('Whether you\'re a passionate hobbyist or a seasoned professional pastry chef, our chocolate school offers comprehensive training tailored to your skill level.'),
+    h(3, 'What You\'ll Learn'),
+    ul([
+      'Tempering secrets for perfect chocolate shine and snap',
+      'Craft artisanal chocolate bars from bean to bar',
+      'Create elegant dragees with various coatings',
+      'Master bonbon filling techniques and flavor combinations',
+      'Design show-stopping chocolate décor for cakes and desserts'
+    ]),
+    h(3, 'Chocolate Startup Program'),
+    p('Launch your own chocolate business with our \'Chocolate Startup: From Idea to Sales\' program. We guide you through every step—from concept development and recipe creation to branding, production setup, and market entry.'),
+    p('Author kits and step-by-step guides help you create true chocolate masterpieces and build a successful chocolate enterprise.')
+  ];
+
+  return upsertService({
+    title: 'Chocolate School for Adults (Beginners & Pros)',
+    slug: 'chocolate-school-adults',
+    shortDescription: 'Individual and group sessions for hobbyists and professional pastry chefs. Learn tempering secrets, craft bars, dragees, bonbons, and show-stopping chocolate décor.',
+    description,
+    icon: 'graduation-cap',
+    featured: true,
+    order: 1
+  });
+}
+
+// 2) Children's Chocolate School
+async function createOrUpdateChildrensSchoolService() {
+  const description = [
+    h(2, 'Sweet Adventures for Young Chocolatiers'),
+    p('Our children\'s chocolate school offers a magical journey into the world of chocolate, where kids learn through hands-on creativity and play in a completely safe environment.'),
+    h(3, 'What Makes Our Kids\' Classes Special'),
+    ul([
+      'Age-appropriate activities designed for different skill levels',
+      'Safe, supervised workshops with professional chocolatiers',
+      'Creative projects that spark imagination and curiosity',
+      'Take-home creations to share with family and friends',
+      'Birthday party packages and group events available'
+    ]),
+    p('Each workshop is designed to create lasting memories while teaching children about the fascinating world of chocolate making. Perfect for birthday parties, school groups, or just a fun afternoon!')
+  ];
+
+  return upsertService({
+    title: 'Children\'s Chocolate School',
+    slug: 'childrens-chocolate-school',
+    shortDescription: 'Fun, hands-on classes introduce kids to the world of chocolate through creativity and play. Safe workshops that leave lasting memories!',
+    description,
+    icon: 'sparkles',
+    featured: true,
+    order: 2
+  });
+}
+
+// 3) HoReCa Consulting
+async function createOrUpdateHoRecaService() {
+  const description = [
+    h(2, 'Elevate Your Restaurant\'s Dessert Menu'),
+    p('Our HoReCa (Hotel/Restaurant/Café) consulting services help you boost revenue and attract more guests by adding signature chocolate items to your menu.'),
+    h(3, 'Our Consulting Services Include'),
+    ul([
+      'Custom dessert menu development with signature chocolate items',
+      'Complete chocolate bar setup and management',
+      'Detailed production charts and standardized recipes',
+      'Staff training on chocolate preparation and presentation',
+      'Cost optimization and profit margin analysis',
+      'Seasonal menu updates and special event planning'
+    ]),
+    p('We make your desserts unforgettable, helping you stand out in a competitive market and create memorable experiences that keep guests coming back.')
+  ];
+
+  return upsertService({
+    title: 'HoReCa Consulting',
+    slug: 'horeca-consulting',
+    shortDescription: 'Boost revenue and attract guests by adding signature chocolate items to your menu. We make your desserts unforgettable, set up chocolate bars, and create detailed production charts.',
+    description,
+    icon: 'briefcase',
+    featured: true,
+    order: 3
+  });
+}
+
+// 4) Tastings & Events
+async function createOrUpdateTastingsEventsService() {
+  const description = [
+    h(2, 'Unforgettable Chocolate Experiences'),
+    p('Transform your private parties, corporate gatherings, and special events into unforgettable celebrations with our premium chocolate tastings and interactive master classes.'),
+    h(3, 'Event Options'),
+    ul([
+      'Private chocolate tasting sessions with curated selections',
+      'Corporate team-building workshops and master classes',
+      'Themed chocolate experiences (wine & chocolate, chocolate & coffee, etc.)',
+      'Hands-on bonbon making sessions for groups',
+      'Celebration packages for birthdays, anniversaries, and special occasions',
+      'On-site or in-venue event planning and execution'
+    ]),
+    p('Each event is customized to your preferences, group size, and occasion. We bring the magic of premium chocolate to create memorable moments your guests will cherish.')
+  ];
+
+  return upsertService({
+    title: 'Tastings & Events',
+    slug: 'tastings-events',
+    shortDescription: 'Themed experiences for private parties and corporate gatherings—turn any occasion into an unforgettable celebration with premium chocolate tastings and master classes.',
+    description,
+    icon: 'calendar',
+    featured: true,
+    order: 4
+  });
+}
+
+// 5) Dessert & Mold Design
+async function createOrUpdateDessertMoldDesignService() {
+  const description = [
+    h(2, 'Custom Chocolate Creations'),
+    p('Elevate your dessert presentations with bespoke chocolate décor and custom-designed molds that perfectly reflect your brand\'s unique style and vision.'),
+    h(3, 'Our Design Services'),
+    ul([
+      'Custom chocolate mold design and production',
+      'Bespoke chocolate décor for cakes and desserts',
+      'Brand logo and signature design integration',
+      'Exclusive dessert concept development',
+      '3D chocolate sculptures and centerpieces',
+      'Seasonal and themed chocolate decorations'
+    ]),
+    p('From concept to creation, we work closely with you to design and produce exclusive chocolate elements that make your desserts truly one-of-a-kind and showcase your brand\'s distinctive style.')
+  ];
+
+  return upsertService({
+    title: 'Dessert & Mold Design',
+    slug: 'dessert-mold-design',
+    shortDescription: 'Bespoke chocolate décor and custom molds for your menu. Create exclusive desserts that showcase your brand\'s style.',
+    description,
+    icon: 'palette',
+    featured: false,
+    order: 5
+  });
+}
+
+// 6) Custom Chocolate Gifts
+async function createOrUpdateCustomGiftsService() {
+  const description = [
+    h(2, 'Personalized Chocolate Delights'),
+    p('Delight your recipients with hand-crafted chocolate gifts that are as beautiful as they are delicious. Perfect for corporate gifting, special occasions, or simply making any moment memorable.'),
+    h(3, 'Our Gift Collection'),
+    ul([
+      'Hand-crafted chocolate gift sets for any occasion',
+      'Edible chocolate postcards with custom messages',
+      'Chocolate business cards for memorable networking',
+      'Corporate branding and logo integration',
+      'Custom packaging and presentation options',
+      'Chocolate décor elements for cakes and desserts',
+      'Bulk orders for events and celebrations'
+    ]),
+    p('Each piece is lovingly crafted by hand using premium ingredients, ensuring that your personalized chocolate creations leave a lasting impression.')
+  ];
+
+  return upsertService({
+    title: 'Custom Chocolate Gifts',
+    slug: 'custom-chocolate-gifts',
+    shortDescription: 'Hand-crafted gift sets, chocolate postcards and business cards, plus décor for your desserts—perfect for making any moment special.',
+    description,
+    icon: 'gift',
+    featured: false,
+    order: 6
+  });
+}
+
+// ====== BLOG POSTS ======
+// Upsert function for blog posts
+async function upsertPost(postData) {
+  try {
+    // Check if post exists by slug
+    const { data: existing } = await api.get(`/posts?filters[slug][$eq]=${postData.slug}&locale=${LOCALE}`);
+
+    const payload = {
+      data: {
+        ...postData,
+        locale: LOCALE,
+        publishedAt: AUTO_PUBLISH ? new Date().toISOString() : null
+      }
+    };
+
+    if (existing && existing.length > 0) {
+      const id = existing[0].id;
+      const res = await api.put(`/posts/${id}`, payload);
+      return { id, action: 'updated', data: res.data.data };
+    } else {
+      const res = await api.post('/posts', payload);
+      return { id: res.data.data.id, action: 'created', data: res.data.data };
+    }
+  } catch (err) {
+    console.error(`Error upserting post "${postData.title}":`, err?.response?.data || err.message);
+    throw err;
+  }
+}
+
+// Blog Post 1: The Art of Tempering Chocolate
+async function createOrUpdateTemperingPost() {
+  return upsertPost({
+    title: 'The Art of Tempering Chocolate: A Complete Guide',
+    slug: 'art-of-tempering-chocolate',
+    excerpt: 'Master the technique of tempering chocolate to achieve that perfect glossy finish and satisfying snap. Learn the science and methods behind this essential skill.',
+    category: 'techniques',
+    tags: ['tempering', 'chocolate making', 'techniques', 'professional'],
+    author: 'Olesea',
+    featured: true,
+    content: [
+      h(2, 'What is Chocolate Tempering?'),
+      p('Tempering is the process of heating and cooling chocolate to stabilize it for making candies and confections. Properly tempered chocolate has a smooth, glossy finish and breaks with a crisp snap.'),
+      h(2, 'Why Temper Chocolate?'),
+      ul([
+        'Creates a glossy, professional appearance',
+        'Provides a satisfying snap when broken',
+        'Prevents chocolate bloom (white streaks)',
+        'Allows chocolate to release easily from molds',
+        'Extends shelf life of chocolate products'
+      ]),
+      h(2, 'The Science Behind Tempering'),
+      p('Chocolate contains cocoa butter, which can crystallize in several forms. Tempering encourages the formation of stable crystals (Form V), which give chocolate its desirable properties. When you melt chocolate, you break down these crystals, and tempering helps reform them in the correct structure.'),
+      h(2, 'Three Methods of Tempering'),
+      h(3, '1. Seeding Method (Recommended for Beginners)'),
+      p('This is the easiest method for home chocolatiers. Melt 2/3 of your chocolate to 45-50°C (113-122°F), then add the remaining 1/3 as "seed" chocolate to cool it down to working temperature (31-32°C for dark chocolate).'),
+      h(3, '2. Tabling Method'),
+      p('Pour 2/3 of melted chocolate onto a marble slab, spread it with a spatula to cool it, then return it to the bowl. This method requires practice but gives excellent results.'),
+      h(3, '3. Microwave Method'),
+      p('Heat chocolate in short bursts, stirring frequently. This method works well for small amounts but requires careful attention to avoid overheating.'),
+      h(2, 'Temperature Guidelines'),
+      ul([
+        'Dark chocolate: Melt to 50°C, cool to 27°C, reheat to 31-32°C',
+        'Milk chocolate: Melt to 45°C, cool to 26°C, reheat to 29-30°C',
+        'White chocolate: Melt to 40°C, cool to 25°C, reheat to 28-29°C'
+      ]),
+      h(2, 'Testing Your Temper'),
+      p('Dip the tip of a knife into the tempered chocolate and let it set at room temperature (18-20°C). It should harden within 3-5 minutes with a glossy finish and no streaks. If it takes longer or looks dull, the chocolate is not properly tempered.'),
+      h(2, 'Common Mistakes to Avoid'),
+      ul([
+        'Overheating the chocolate (destroys the cocoa butter structure)',
+        'Getting water in the chocolate (causes seizing)',
+        'Working in a hot or humid environment',
+        'Not stirring enough during the process',
+        'Using old or bloom-affected chocolate as seed'
+      ]),
+      h(2, 'Join Our Chocolate School'),
+      p('Want to master tempering in person? Our chocolate school offers hands-on classes where you\'ll learn professional techniques from experienced chocolatiers. We cover everything from basic tempering to advanced molding techniques.')
+    ]
+  });
+}
+
+// Blog Post 2: 5 Easy Chocolate Desserts
+async function createOrUpdateEasyDessertsPost() {
+  return upsertPost({
+    title: '5 Easy Chocolate Desserts Anyone Can Make',
+    slug: '5-easy-chocolate-desserts',
+    excerpt: 'Impress your friends and family with these simple yet delicious chocolate desserts. No advanced skills required—just quality chocolate and a love for sweet treats!',
+    category: 'recipes',
+    tags: ['recipes', 'desserts', 'easy', 'beginner-friendly'],
+    author: 'Olesea',
+    featured: true,
+    content: [
+      h(2, 'Introduction'),
+      p('You don\'t need to be a pastry chef to create stunning chocolate desserts. These five recipes use simple techniques and readily available ingredients to deliver impressive results every time.'),
+      h(2, '1. Classic Chocolate Mousse'),
+      p('Light, airy, and intensely chocolatey, this mousse requires just four ingredients: dark chocolate, eggs, sugar, and cream. The key is to fold everything gently to maintain those delicate air bubbles.'),
+      ul([
+        'Prep time: 15 minutes',
+        'Chill time: 2 hours',
+        'Difficulty: Easy',
+        'Serves: 4-6'
+      ]),
+      h(2, '2. No-Bake Chocolate Tart'),
+      p('A buttery cookie crust filled with silky chocolate ganache—and you don\'t even need to turn on the oven. This elegant dessert looks like it came from a fancy bakery but takes minimal effort.'),
+      h(2, '3. Chocolate-Covered Strawberries'),
+      p('The ultimate romantic dessert that\'s surprisingly simple. The secret is properly tempered chocolate (or use our chocolate melts designed specifically for dipping). Fresh, ripe strawberries make all the difference.'),
+      h(2, '4. Flourless Chocolate Cake'),
+      p('Rich, fudgy, and naturally gluten-free. This cake has a crispy exterior and a molten center. It\'s the perfect showcase for high-quality dark chocolate.'),
+      h(2, '5. Chocolate Truffles'),
+      p('These bite-sized indulgences are easier than you think. The basic recipe is just chocolate and cream, rolled into balls and dusted with cocoa powder. Once you master the basic technique, you can experiment with endless flavor variations.'),
+      h(2, 'Tips for Success'),
+      ul([
+        'Always use quality chocolate—it\'s the star of these recipes',
+        'Bring ingredients to room temperature before starting',
+        'Don\'t rush the chilling/setting times',
+        'Taste and adjust sweetness to your preference',
+        'Make extra—these desserts disappear quickly!'
+      ]),
+      h(2, 'Want to Learn More?'),
+      p('Join our chocolate school classes to master these recipes and many more. We provide all the ingredients and expert guidance to help you become a confident chocolate dessert maker.')
+    ]
+  });
+}
+
+// Blog Post 3: Choosing the Right Chocolate
+async function createOrUpdateChoosingChocolatePost() {
+  return upsertPost({
+    title: 'How to Choose the Right Chocolate for Your Recipes',
+    slug: 'choosing-right-chocolate',
+    excerpt: 'Not all chocolate is created equal. Learn how to select the perfect chocolate for baking, tempering, and eating, and understand what those percentages really mean.',
+    category: 'tips',
+    tags: ['chocolate selection', 'quality', 'baking', 'tips'],
+    author: 'Olesea',
+    featured: false,
+    content: [
+      h(2, 'Understanding Chocolate Types'),
+      p('The world of chocolate can be confusing, with terms like couverture, compound, and percentages thrown around. Let\'s break it down so you can make informed choices for your projects.'),
+      h(2, 'The Percentage Game'),
+      p('When you see "70% dark chocolate," that percentage refers to the cocoa content (cocoa solids + cocoa butter). The rest is primarily sugar. Higher percentage doesn\'t automatically mean better—it depends on your use case.'),
+      ul([
+        '50-60%: Mild, sweet, great for beginners',
+        '60-70%: Balanced, versatile for most recipes',
+        '70-85%: Intense, less sweet, preferred by purists',
+        '85%+: Very bitter, specialty applications'
+      ]),
+      h(2, 'Couverture vs. Regular Chocolate'),
+      p('Couverture chocolate has a higher cocoa butter content (minimum 31%), which makes it ideal for tempering and coating. It\'s what professionals use for molded chocolates and enrobing. Regular chocolate has less cocoa butter and is better suited for baking where texture is less critical.'),
+      h(2, 'Single-Origin vs. Blends'),
+      p('Single-origin chocolate comes from cocoa beans grown in one region, offering unique flavor profiles—fruity, nutty, floral, or earthy. Blended chocolates combine beans from different regions for consistent, balanced flavor. Neither is "better"—it depends on whether you want consistency or adventure.'),
+      h(2, 'What to Look For on the Label'),
+      ul([
+        'Cocoa percentage and type (dark, milk, white)',
+        'Ingredients list (shorter is usually better)',
+        'Cocoa butter vs. other fats (avoid "chocolate-flavored coating")',
+        'Origin information if you\'re interested in terroir',
+        'Certifications (Fair Trade, organic, etc.)'
+      ]),
+      h(2, 'Matching Chocolate to Purpose'),
+      h(3, 'For Tempering & Molding'),
+      p('Use couverture chocolate with high cocoa butter content. Our shop carries professional-grade couverture in dark, milk, and white varieties.'),
+      h(3, 'For Baking'),
+      p('Regular chocolate chips or bars work great. The extra fat in recipes compensates for lower cocoa butter content.'),
+      h(3, 'For Eating'),
+      p('This is purely personal preference! Experiment with different percentages and origins to find your favorites.'),
+      h(2, 'Storage Tips'),
+      p('Store chocolate in a cool (15-18°C), dry place away from strong odors. Avoid refrigeration unless absolutely necessary, as condensation can cause sugar bloom. Properly stored chocolate can last for years.'),
+      h(2, 'Visit Our Shop'),
+      p('We carry a curated selection of high-quality chocolate from around the world, perfect for any project. Our staff can help you choose the right chocolate for your needs.')
+    ]
+  });
+}
+
+// Blog Post 4: Behind the Scenes at Our Chocolate School
+async function createOrUpdateSchoolBehindScenesPost() {
+  return upsertPost({
+    title: 'Behind the Scenes: A Day at Our Chocolate School',
+    slug: 'behind-scenes-chocolate-school',
+    excerpt: 'Ever wondered what happens in our chocolate school classes? Join us for a virtual tour of a typical class day and discover what makes our hands-on approach special.',
+    category: 'events',
+    tags: ['chocolate school', 'classes', 'education', 'behind the scenes'],
+    author: 'Olesea',
+    featured: false,
+    content: [
+      h(2, 'Welcome to Class'),
+      p('Our chocolate school isn\'t just about following recipes—it\'s about understanding the craft of chocolate making. Let me take you through a typical day in one of our adult chocolate school classes.'),
+      h(2, '9:00 AM - Arrival & Setup'),
+      p('Students arrive to find their workstations already set up with all the tools they\'ll need: marble slab, thermometer, spatulas, molds, and of course, premium chocolate. We start with coffee and pastries while everyone settles in and gets to know each other.'),
+      h(2, '9:30 AM - Theory & Demonstration'),
+      p('Every great chocolatier needs to understand the "why" behind the techniques. We spend the first hour covering the science of chocolate, discussing cocoa percentages, and demonstrating the day\'s techniques. Students are encouraged to ask questions—lots of them!'),
+      h(2, '10:30 AM - Hands-On Practice'),
+      p('Now the real fun begins. Today\'s class is focusing on tempering and molding. Each student gets to work with their own batch of chocolate, learning to recognize the subtle signs of proper temper. I walk around, offering guidance and troubleshooting.'),
+      h(2, '12:00 PM - Lunch Break'),
+      p('We break for a light lunch (with chocolate tasting, naturally). This is when the group really bonds, sharing their experiences and chocolate aspirations. Some students dream of starting their own business, others just want to make better gifts for friends.'),
+      h(2, '1:00 PM - Creative Work'),
+      p('The afternoon is dedicated to creativity. Students design and fill their own chocolate molds, experimenting with flavors and decorations. This is where personalities shine through—some create elegant minimalist pieces, others go bold with colors and patterns.'),
+      h(2, '3:00 PM - Finishing & Packaging'),
+      p('We learn proper unmolding techniques and how to polish chocolates for a professional finish. Then students package their creations in beautiful boxes to take home. There\'s always a sense of pride when they see their finished products.'),
+      h(2, '4:00 PM - Cleanup & Goodbye'),
+      p('We clean up together (chocolate cleanup is strangely satisfying), and students leave with their chocolates, detailed notes, and usually a plan to return for the next level class.'),
+      h(2, 'What Makes Our School Special'),
+      ul([
+        'Small class sizes (max 8 students) for personalized attention',
+        'Professional-grade equipment and ingredients',
+        'Experienced instructors with industry backgrounds',
+        'Hands-on practice, not just watching demonstrations',
+        'Supportive community of chocolate lovers',
+        'All materials included—just bring your enthusiasm'
+      ]),
+      h(2, 'Different Classes for Different Goals'),
+      p('We offer classes for complete beginners, advanced techniques for aspiring professionals, and special kids\' classes that make learning fun. Every class is designed to be informative, practical, and enjoyable.'),
+      h(2, 'Ready to Join Us?'),
+      p('Browse our upcoming classes and reserve your spot. Whether you want to learn the basics or master advanced techniques, we have a class for you.')
+    ]
+  });
+}
+
+// Blog Post 5: Seasonal Chocolate Gift Ideas
+async function createOrUpdateGiftIdeasPost() {
+  return upsertPost({
+    title: 'Creative Chocolate Gift Ideas for Every Occasion',
+    slug: 'chocolate-gift-ideas',
+    excerpt: 'Move beyond the basic box of chocolates. Discover unique, personalized chocolate gift ideas that will delight recipients and showcase your thoughtfulness.',
+    category: 'news',
+    tags: ['gifts', 'occasions', 'custom', 'chocolate art'],
+    author: 'Olesea',
+    featured: false,
+    content: [
+      h(2, 'Beyond the Standard Gift Box'),
+      p('Chocolate gifts are always appreciated, but with a little creativity, you can transform them from ordinary to extraordinary. Here are our favorite ideas for different occasions.'),
+      h(2, 'For Birthdays'),
+      h(3, 'Chocolate Portrait'),
+      p('Commission a custom chocolate portrait of the birthday person. We can create realistic chocolate art based on a photo—it\'s edible and impressive!'),
+      h(3, 'Number Molded Chocolates'),
+      p('Create large chocolate numbers representing their age, filled with their favorite treats. It\'s festive and fun for milestone birthdays.'),
+      h(2, 'For Weddings & Anniversaries'),
+      h(3, 'Chocolate Postcards'),
+      p('Send your love in chocolate form! Our chocolate postcards can be customized with dates, names, or sweet messages. They\'re beautiful keepsakes (until they\'re eaten).'),
+      h(3, 'Matching Chocolate Sets'),
+      p('Create "his and hers" sets with complementary flavors—dark chocolate for one, milk for the other, elegantly packaged together.'),
+      h(2, 'For Corporate Gifts'),
+      h(3, 'Logo Chocolates'),
+      p('Impress clients and employees with custom chocolates featuring your company logo. We handle everything from design to packaging.'),
+      h(3, 'Chocolate Business Cards'),
+      p('Yes, really! Edible business cards made from premium chocolate leave a lasting (and delicious) impression.'),
+      h(2, 'For Holidays'),
+      h(3, 'Themed Advent Calendars'),
+      p('Skip the commercial calendars and create a custom chocolate advent calendar with handpicked favorites.'),
+      h(3, 'Chocolate Ornaments'),
+      p('Decorate trees with edible chocolate ornaments that double as gifts or treats for guests.'),
+      h(2, 'For "Just Because"'),
+      h(3, 'Chocolate Tasting Set'),
+      p('Curate a selection of single-origin chocolates from around the world, complete with tasting notes. It\'s like a wine tasting, but sweeter.'),
+      h(3, 'Dessert Decoration Kit'),
+      p('Put together a kit with chocolate shavings, curls, and decorative elements for the home baker in your life.'),
+      h(2, 'Personalization Makes the Difference'),
+      p('What transforms a good chocolate gift into a great one is personalization. Consider the recipient\'s favorite flavors, dietary restrictions, color preferences, and the message you want to convey.'),
+      h(2, 'Our Custom Gift Services'),
+      ul([
+        'Custom molding and shaping',
+        'Personalized messages in chocolate',
+        'Logo and image reproduction',
+        'Elegant gift packaging',
+        'Delivery coordination for special dates',
+        'Consultation to match gifts to recipients'
+      ]),
+      h(2, 'Quality Matters'),
+      p('The difference between forgettable and memorable chocolate gifts often comes down to quality. We use premium chocolate and artisanal techniques to ensure every gift makes the right impression.'),
+      h(2, 'Start Planning Your Gift'),
+      p('Browse our custom gift options or contact us to discuss a completely bespoke creation. We love bringing creative chocolate gift ideas to life!')
+    ]
+  });
+}
+
+// Blog Post 6: Chocolate and Wine Pairing
+async function createOrUpdatePairingPost() {
+  return upsertPost({
+    title: 'Chocolate and Wine Pairing: A Sophisticated Guide',
+    slug: 'chocolate-wine-pairing',
+    excerpt: 'Elevate your tasting experience by pairing chocolate with wine. Learn which combinations work beautifully and why, from our sommeliers and chocolatiers.',
+    category: 'tips',
+    tags: ['pairing', 'wine', 'tasting', 'sophisticated'],
+    author: 'Olesea',
+    featured: true,
+    content: [
+      h(2, 'The Art of Pairing'),
+      p('Chocolate and wine pairing is a sophisticated pleasure that, when done right, elevates both elements. The key is understanding how flavors interact and finding combinations that enhance rather than overwhelm.'),
+      h(2, 'Basic Pairing Principles'),
+      ul([
+        'Match intensity: Delicate chocolates with lighter wines, robust chocolates with fuller wines',
+        'Complement or contrast: Pair similar flavor notes, or use contrasting profiles for interest',
+        'Consider sweetness: The wine should be as sweet or sweeter than the chocolate',
+        'Don\'t forget tannins: High-tannin wines can clash with milk chocolate',
+        'Temperature matters: Serve wine at proper temperature, chocolate at room temp'
+      ]),
+      h(2, 'Dark Chocolate Pairings'),
+      h(3, '70-75% Dark Chocolate'),
+      p('Pairs beautifully with Cabernet Sauvignon, Zinfandel, or Port. The wine\'s tannins complement the chocolate\'s complexity without overwhelming it.'),
+      h(3, '80-85% Dark Chocolate'),
+      p('Try with fortified wines like Madeira or sweet Sherry. The wine\'s sweetness balances the chocolate\'s intensity.'),
+      h(2, 'Milk Chocolate Pairings'),
+      p('Milk chocolate\'s creaminess pairs wonderfully with dessert wines like Moscato d\'Asti, Riesling, or even a light Pinot Noir. The key is avoiding high-tannin wines that will taste bitter against the milk.'),
+      h(2, 'White Chocolate Pairings'),
+      p('Though technically not chocolate (no cocoa solids), white chocolate pairs well with crisp white wines, Champagne, or sweet ice wines. The effervescence cuts through the richness.'),
+      h(2, 'Flavored Chocolate Pairings'),
+      h(3, 'Fruit-Infused Chocolates'),
+      p('Match the fruit notes: raspberry chocolate with Pinot Noir, orange chocolate with Grand Marnier, strawberry chocolate with rosé.'),
+      h(3, 'Spiced Chocolates'),
+      p('Chili or ginger-infused chocolates pair surprisingly well with Syrah or Shiraz, which have their own peppery notes.'),
+      h(3, 'Salted Caramel Chocolates'),
+      p('The sweet-salty combination works beautifully with bourbon or Scotch whisky, or try a sweet Riesling.'),
+      h(2, 'Creating a Pairing Experience'),
+      p('For a proper tasting, start with lighter chocolates and wines, progressing to richer, more intense combinations. Cleanse your palate with water between pairings. Take small bites and sips, letting the chocolate melt on your tongue before sipping the wine.'),
+      h(2, 'Our Pairing Events'),
+      p('We host regular chocolate and wine pairing events where you can explore these combinations under expert guidance. Each event features 5-6 carefully selected pairings with detailed notes on why they work.'),
+      h(2, 'Common Pairing Mistakes'),
+      ul([
+        'Pairing tannic red wine with milk chocolate',
+        'Serving wine too cold or too warm',
+        'Using low-quality chocolate with premium wine (or vice versa)',
+        'Eating chocolate too quickly without letting it melt',
+        'Overwhelming your palate by not cleansing between tastings'
+      ]),
+      h(2, 'Build Your Own Pairing'),
+      p('Visit our shop to select artisan chocolates, and we\'ll provide pairing recommendations. We also offer curated pairing sets that take the guesswork out of creating your own tasting experience.')
+    ]
+  });
+}
+
+// ====== HEADER & FOOTER ======
+
+// Header Single Type
+async function createOrUpdateHeader() {
+  try {
+    const headerData = {
+      ownerName: 'Olesea',
+      menuItems: [
+        { label: 'Home', href: '/', isActive: false },
+        { label: 'Services', href: '/services', isActive: false },
+        { label: 'School', href: '/school', isActive: false },
+        { label: 'Shop', href: '/shop', isActive: false },
+        { label: 'Blog', href: '/blog', isActive: false },
+        { label: 'About', href: '/about', isActive: false },
+        { label: 'Contact', href: '/contact', isActive: false },
+      ],
+      ctaButton: cta('Book a Class', '/school')
+    };
+
+    const payload = {
+      data: {
+        ...headerData,
+        locale: LOCALE,
+        publishedAt: AUTO_PUBLISH ? new Date().toISOString() : null
+      }
+    };
+
+    // For single types, just PUT without checking if exists
+    const res = await api.put('/header', payload);
+    return { id: res.data.data.id || res.data.data.documentId, action: 'updated' };
+  } catch (err) {
+    console.error(`Error updating header:`, err?.response?.data || err.message);
+    throw err;
+  }
+}
+
+// Footer Single Type
+async function createOrUpdateFooter() {
+  try {
+    const footerData = {
+      address: 'Chisinau, Moldova\nStr. Example 123',
+      contactItem: [
+        { label: 'Phone', value: '+373 12 345 678' },
+        { label: 'Email', value: 'info@delicemy.md' },
+        { label: 'WhatsApp', value: '+373 12 345 678' }
+      ],
+      socialLink: [
+        { platform: 'Facebook', url: 'https://facebook.com/delicemy' },
+        { platform: 'Instagram', url: 'https://instagram.com/delicemy' },
+        { platform: 'TikTok', url: 'https://tiktok.com/@delicemy' }
+      ],
+      bottomNote: '© 2025 DeliceMy. Handcrafted with love in Chisinau.',
+      legalLinks: [
+        { label: 'Privacy Policy', url: '/privacy-policy', newTab: false },
+        { label: 'Terms of Service', url: '/terms', newTab: false }
+      ]
+    };
+
+    const payload = {
+      data: {
+        ...footerData,
+        publishedAt: AUTO_PUBLISH ? new Date().toISOString() : null
+      }
+    };
+
+    // For single types, just PUT without checking if exists
+    const res = await api.put('/footer', payload);
+    return { id: res.data.data.id || res.data.data.documentId, action: 'updated' };
+  } catch (err) {
+    console.error(`Error updating footer:`, err?.response?.data || err.message);
+    throw err;
+  }
+}
+
 // ====== RUN ======
 (async () => {
   try {
@@ -825,7 +1499,7 @@ async function createOrUpdateContact() {
     }
 
     console.log(`\n📄 Creating/updating pages...`);
-    
+
     // Run each page separately with error handling
     const pages = [
       { name: `Home`, fn: createOrUpdateHome },
@@ -833,6 +1507,7 @@ async function createOrUpdateContact() {
       { name: `About`, fn: createOrUpdateAbout },
       { name: `School`, fn: createOrUpdateSchool },
       { name: `Shop`, fn: createOrUpdateShop },
+      { name: `Blog`, fn: createOrUpdateBlog },
       { name: `Contact`, fn: createOrUpdateContact },
     ];
 
@@ -851,15 +1526,99 @@ async function createOrUpdateContact() {
     }
 
     console.log(``);
-    console.log(`📊 Results: ${successCount}/${pages.length} pages successful`);
-    
-    if (failedPages.length > 0) {
-      console.log(`⚠️  Failed pages: ${failedPages.join(', ')}`);
+    console.log(`📊 Pages: ${successCount}/${pages.length} successful`);
+
+    // Create individual Service entries
+    console.log(`\n🎯 Creating/updating individual services...`);
+
+    const services = [
+      { name: `Chocolate School for Adults`, fn: createOrUpdateAdultSchoolService },
+      { name: `Children's Chocolate School`, fn: createOrUpdateChildrensSchoolService },
+      { name: `HoReCa Consulting`, fn: createOrUpdateHoRecaService },
+      { name: `Tastings & Events`, fn: createOrUpdateTastingsEventsService },
+      { name: `Dessert & Mold Design`, fn: createOrUpdateDessertMoldDesignService },
+      { name: `Custom Chocolate Gifts`, fn: createOrUpdateCustomGiftsService },
+    ];
+
+    let serviceSuccessCount = 0;
+    let failedServices = [];
+
+    for (const service of services) {
+      try {
+        const result = await service.fn();
+        console.log(`✅ ${service.name}: ${result.action} (ID: ${result.id})`);
+        serviceSuccessCount++;
+      } catch (error) {
+        console.log(`❌ ${service.name}: Failed`);
+        failedServices.push(service.name);
+      }
+    }
+
+    console.log(``);
+    console.log(`📊 Services: ${serviceSuccessCount}/${services.length} successful`);
+
+    // Create Blog Posts
+    console.log(`\n📝 Creating/updating blog posts...`);
+
+    const posts = [
+      { name: `The Art of Tempering Chocolate`, fn: createOrUpdateTemperingPost },
+      { name: `5 Easy Chocolate Desserts`, fn: createOrUpdateEasyDessertsPost },
+      { name: `Choosing the Right Chocolate`, fn: createOrUpdateChoosingChocolatePost },
+      { name: `Behind the Scenes at Our Chocolate School`, fn: createOrUpdateSchoolBehindScenesPost },
+      { name: `Creative Chocolate Gift Ideas`, fn: createOrUpdateGiftIdeasPost },
+      { name: `Chocolate and Wine Pairing`, fn: createOrUpdatePairingPost },
+    ];
+
+    let postSuccessCount = 0;
+    let failedPosts = [];
+
+    for (const post of posts) {
+      try {
+        const result = await post.fn();
+        console.log(`✅ ${post.name}: ${result.action} (ID: ${result.id})`);
+        postSuccessCount++;
+      } catch (error) {
+        console.log(`❌ ${post.name}: Failed`);
+        failedPosts.push(post.name);
+      }
+    }
+
+    console.log(``);
+    console.log(`📊 Blog Posts: ${postSuccessCount}/${posts.length} successful`);
+
+    // Create/Update Header and Footer
+    console.log(`\n🎨 Creating/updating Header & Footer...`);
+
+    try {
+      const headerResult = await createOrUpdateHeader();
+      console.log(`✅ Header: ${headerResult.action}`);
+    } catch (error) {
+      console.log(`❌ Header: Failed`);
+    }
+
+    try {
+      const footerResult = await createOrUpdateFooter();
+      console.log(`✅ Footer: ${footerResult.action}`);
+    } catch (error) {
+      console.log(`❌ Footer: Failed`);
+    }
+
+    if (failedPages.length > 0 || failedServices.length > 0 || failedPosts.length > 0) {
+      if (failedPages.length > 0) {
+        console.log(`⚠️  Failed pages: ${failedPages.join(', ')}`);
+      }
+      if (failedServices.length > 0) {
+        console.log(`⚠️  Failed services: ${failedServices.join(', ')}`);
+      }
+      if (failedPosts.length > 0) {
+        console.log(`⚠️  Failed blog posts: ${failedPosts.join(', ')}`);
+      }
       console.log(`   Check the errors above and ensure:`);
       console.log(`   - All required media IDs exist`);
       console.log(`   - Schema components match exactly`);
+      console.log(`   - Service and Post content types are properly created`);
     } else {
-      console.log(`🎉 All pages created/updated successfully!`);
+      console.log(`🎉 All pages, services, and blog posts created/updated successfully!`);
     }
 
     console.log(``);

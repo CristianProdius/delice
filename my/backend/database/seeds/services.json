@@ -1,0 +1,660 @@
+[
+  {
+    "title": "Chocolate School for Adults (Beginners & Pros)",
+    "slug": "chocolate-school-adults",
+    "shortDescription": "Individual and group sessions for hobbyists and professional pastry chefs. Learn tempering secrets, craft bars, dragees, bonbons, and show-stopping chocolate décor.",
+    "description": [
+      {
+        "type": "heading",
+        "level": 2,
+        "children": [
+          {
+            "type": "text",
+            "text": "Master the Art of Chocolate"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Whether you're a passionate hobbyist or a seasoned professional pastry chef, our chocolate school offers comprehensive training tailored to your skill level."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "children": [
+          {
+            "type": "text",
+            "text": "What You'll Learn"
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "format": "unordered",
+        "children": [
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Tempering secrets for perfect chocolate shine and snap"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Craft artisanal chocolate bars from bean to bar"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Create elegant dragees with various coatings"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Master bonbon filling techniques and flavor combinations"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Design show-stopping chocolate décor for cakes and desserts"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "children": [
+          {
+            "type": "text",
+            "text": "Chocolate Startup Program"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Launch your own chocolate business with our 'Chocolate Startup: From Idea to Sales' program. We guide you through every step—from concept development and recipe creation to branding, production setup, and market entry."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Author kits and step-by-step guides help you create true chocolate masterpieces and build a successful chocolate enterprise."
+          }
+        ]
+      }
+    ],
+    "icon": "graduation-cap",
+    "featured": true,
+    "order": 1
+  },
+  {
+    "title": "Children's Chocolate School",
+    "slug": "childrens-chocolate-school",
+    "shortDescription": "Fun, hands-on classes introduce kids to the world of chocolate through creativity and play. Safe workshops that leave lasting memories!",
+    "description": [
+      {
+        "type": "heading",
+        "level": 2,
+        "children": [
+          {
+            "type": "text",
+            "text": "Sweet Adventures for Young Chocolatiers"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Our children's chocolate school offers a magical journey into the world of chocolate, where kids learn through hands-on creativity and play in a completely safe environment."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "children": [
+          {
+            "type": "text",
+            "text": "What Makes Our Kids' Classes Special"
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "format": "unordered",
+        "children": [
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Age-appropriate activities designed for different skill levels"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Safe, supervised workshops with professional chocolatiers"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Creative projects that spark imagination and curiosity"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Take-home creations to share with family and friends"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Birthday party packages and group events available"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Each workshop is designed to create lasting memories while teaching children about the fascinating world of chocolate making. Perfect for birthday parties, school groups, or just a fun afternoon!"
+          }
+        ]
+      }
+    ],
+    "icon": "sparkles",
+    "featured": true,
+    "order": 2
+  },
+  {
+    "title": "HoReCa Consulting",
+    "slug": "horeca-consulting",
+    "shortDescription": "Boost revenue and attract guests by adding signature chocolate items to your menu. We make your desserts unforgettable, set up chocolate bars, and create detailed production charts.",
+    "description": [
+      {
+        "type": "heading",
+        "level": 2,
+        "children": [
+          {
+            "type": "text",
+            "text": "Elevate Your Restaurant's Dessert Menu"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Our HoReCa (Hotel/Restaurant/Café) consulting services help you boost revenue and attract more guests by adding signature chocolate items to your menu."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "children": [
+          {
+            "type": "text",
+            "text": "Our Consulting Services Include"
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "format": "unordered",
+        "children": [
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Custom dessert menu development with signature chocolate items"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Complete chocolate bar setup and management"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Detailed production charts and standardized recipes"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Staff training on chocolate preparation and presentation"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Cost optimization and profit margin analysis"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Seasonal menu updates and special event planning"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "We make your desserts unforgettable, helping you stand out in a competitive market and create memorable experiences that keep guests coming back."
+          }
+        ]
+      }
+    ],
+    "icon": "briefcase",
+    "featured": true,
+    "order": 3
+  },
+  {
+    "title": "Tastings & Events",
+    "slug": "tastings-events",
+    "shortDescription": "Themed experiences for private parties and corporate gatherings—turn any occasion into an unforgettable celebration with premium chocolate tastings and master classes.",
+    "description": [
+      {
+        "type": "heading",
+        "level": 2,
+        "children": [
+          {
+            "type": "text",
+            "text": "Unforgettable Chocolate Experiences"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Transform your private parties, corporate gatherings, and special events into unforgettable celebrations with our premium chocolate tastings and interactive master classes."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "children": [
+          {
+            "type": "text",
+            "text": "Event Options"
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "format": "unordered",
+        "children": [
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Private chocolate tasting sessions with curated selections"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Corporate team-building workshops and master classes"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Themed chocolate experiences (wine & chocolate, chocolate & coffee, etc.)"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Hands-on bonbon making sessions for groups"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Celebration packages for birthdays, anniversaries, and special occasions"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "On-site or in-venue event planning and execution"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Each event is customized to your preferences, group size, and occasion. We bring the magic of premium chocolate to create memorable moments your guests will cherish."
+          }
+        ]
+      }
+    ],
+    "icon": "calendar",
+    "featured": true,
+    "order": 4
+  },
+  {
+    "title": "Dessert & Mold Design",
+    "slug": "dessert-mold-design",
+    "shortDescription": "Bespoke chocolate décor and custom molds for your menu. Create exclusive desserts that showcase your brand's style.",
+    "description": [
+      {
+        "type": "heading",
+        "level": 2,
+        "children": [
+          {
+            "type": "text",
+            "text": "Custom Chocolate Creations"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Elevate your dessert presentations with bespoke chocolate décor and custom-designed molds that perfectly reflect your brand's unique style and vision."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "children": [
+          {
+            "type": "text",
+            "text": "Our Design Services"
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "format": "unordered",
+        "children": [
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Custom chocolate mold design and production"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Bespoke chocolate décor for cakes and desserts"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Brand logo and signature design integration"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Exclusive dessert concept development"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "3D chocolate sculptures and centerpieces"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Seasonal and themed chocolate decorations"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "From concept to creation, we work closely with you to design and produce exclusive chocolate elements that make your desserts truly one-of-a-kind and showcase your brand's distinctive style."
+          }
+        ]
+      }
+    ],
+    "icon": "palette",
+    "featured": false,
+    "order": 5
+  },
+  {
+    "title": "Custom Chocolate Gifts",
+    "slug": "custom-chocolate-gifts",
+    "shortDescription": "Hand-crafted gift sets, chocolate postcards and business cards, plus décor for your desserts—perfect for making any moment special.",
+    "description": [
+      {
+        "type": "heading",
+        "level": 2,
+        "children": [
+          {
+            "type": "text",
+            "text": "Personalized Chocolate Delights"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Delight your recipients with hand-crafted chocolate gifts that are as beautiful as they are delicious. Perfect for corporate gifting, special occasions, or simply making any moment memorable."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "children": [
+          {
+            "type": "text",
+            "text": "Our Gift Collection"
+          }
+        ]
+      },
+      {
+        "type": "list",
+        "format": "unordered",
+        "children": [
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Hand-crafted chocolate gift sets for any occasion"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Edible chocolate postcards with custom messages"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Chocolate business cards for memorable networking"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Corporate branding and logo integration"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Custom packaging and presentation options"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Chocolate décor elements for cakes and desserts"
+              }
+            ]
+          },
+          {
+            "type": "list-item",
+            "children": [
+              {
+                "type": "text",
+                "text": "Bulk orders for events and celebrations"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Each piece is lovingly crafted by hand using premium ingredients, ensuring that your personalized chocolate creations leave a lasting impression."
+          }
+        ]
+      }
+    ],
+    "icon": "gift",
+    "featured": false,
+    "order": 6
+  }
+]
