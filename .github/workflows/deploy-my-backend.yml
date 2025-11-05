@@ -75,10 +75,14 @@ jobs:
             # Navigate to project directory
             cd /srv/clients/delice/my/cms
 
-            # Create .env file from secret
-            cat > .env << 'EOF'
+            # Create .env file from secret with sudo
+            sudo tee .env > /dev/null << 'EOF'
             ${{ secrets.MY_PROJECT_ENV }}
             EOF
+
+            # Fix ownership
+            sudo chown $USER:$USER .env
+            sudo chmod 600 .env
 
             # Verify .env was created correctly
             if [ ! -s .env ]; then
