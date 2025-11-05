@@ -108,9 +108,9 @@ export async function getPage(slug: string, locale: string = 'en') {
 
 // Header & Footer (Single Types)
 export async function getHeader(locale: string = 'en') {
-  return fetchStrapi<StrapiResponse<Header>>('/header', { locale });
+  return fetchStrapi<StrapiResponse<Header>>('/header?populate=*', { locale });
 }
 
 export async function getFooter(locale: string = 'en') {
-  return fetchStrapi<StrapiResponse<Footer>>('/footer', { locale });
+  return fetchStrapi<StrapiResponse<Footer>>('/footer?populate=*', { locale });
 }
