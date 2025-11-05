@@ -102,7 +102,7 @@ jobs:
             # Start new container
             sudo docker run -d \
               --name delice-my-cms \
-              --network delice_network \
+              --network web \
               --restart unless-stopped \
               -p 1337:1337 \
               --env-file .env \
