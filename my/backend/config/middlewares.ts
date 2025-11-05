@@ -35,9 +35,11 @@ export default [
   name: 'strapi::cors',
   config: {
     origin: [
-      'https://your-vercel-app.vercel.app',
+      'https://delice-tau.vercel.app',
+      'https://delice.my',
       'https://www.delice.my',
-      'https://cms.delice.my'
+      'https://cms.delice.my',
+      /\.vercel\.app$/, // Allow all Vercel preview deployments
     ],
     methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
     headers: '*',
