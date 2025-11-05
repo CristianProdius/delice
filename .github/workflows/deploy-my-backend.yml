@@ -93,14 +93,14 @@ jobs:
             echo ".env file created successfully ($(wc -l < .env) lines)"
 
             # Pull latest image
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            sudo docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
             # Stop and remove old container
-            docker stop delice-my-cms 2>/dev/null || true
-            docker rm delice-my-cms 2>/dev/null || true
+            sudo docker stop delice-my-cms 2>/dev/null || true
+            sudo docker rm delice-my-cms 2>/dev/null || true
 
             # Start new container
-            docker run -d \
+            sudo docker run -d \
               --name delice-my-cms \
               --network delice_network \
               --restart unless-stopped \
@@ -112,14 +112,14 @@ jobs:
             sleep 5
 
             # Check container status
-            if docker ps | grep -q delice-my-cms; then
+            if sudo docker ps | grep -q delice-my-cms; then
               echo "Container started successfully"
-              docker logs --tail 20 delice-my-cms
+              sudo docker logs --tail 20 delice-my-cms
             else
               echo "Container failed to start"
-              docker logs delice-my-cms
+              sudo docker logs delice-my-cms
               exit 1
             fi
 
             # Clean up old images
-            docker image prune -f
+            sudo docker image prune -f
