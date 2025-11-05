@@ -7,6 +7,12 @@ export interface ElementsCardItem extends Struct.ComponentSchema {
     displayName: 'cardItem';
   };
   attributes: {
+    accentColor: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
     badge: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -21,7 +27,19 @@ export interface ElementsCardItem extends Struct.ComponentSchema {
         };
       }>;
     features: Schema.Attribute.Component<'elements.highlights', true>;
+    gridClass: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
     icon: Schema.Attribute.Media<'images' | 'files'>;
+    iconName: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
     image: Schema.Attribute.Media<'images'>;
     price: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{

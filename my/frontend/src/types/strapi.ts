@@ -89,10 +89,15 @@ export interface ServiceItem {
   id: number;
   title: string;
   description: any[]; // Rich text blocks
+  image?: StrapiImage | null;
+  icon?: StrapiImage | null;
   price?: string | null;
   badge?: string | null;
   variant: string;
   ctaButton?: CTAButton;
+  iconName?: string | null;
+  accentColor?: string | null;
+  gridClass?: string | null;
 }
 
 export interface ServicesSection {
