@@ -1,6 +1,7 @@
 import { getPost } from '@/lib/strapi/api';
 import { STRAPI_URL } from '@/lib/strapi/client';
 import { notFound } from 'next/navigation';
+import Image from 'next/image';
 
 export default async function BlogPostPage({
   params,
@@ -60,7 +61,7 @@ export default async function BlogPostPage({
 
               {/* Cover Image */}
               {post.coverImage?.media && (
-                <div className="mb-12 rounded-lg overflow-hidden">
+                <div className="mb-12 rounded-lg overflow-hidden relative w-full aspect-video">
                   {(() => {
                     const media = Array.isArray(post.coverImage.media)
                       ? post.coverImage.media[0]
@@ -69,10 +70,12 @@ export default async function BlogPostPage({
                     if (!media) return null;
 
                     return (
-                      <img
+                      <Image
                         src={`${STRAPI_URL}${media.url}`}
                         alt={post.coverImage.alt || post.title}
-                        className="w-full h-auto"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
                       />
                     );
                   })()}

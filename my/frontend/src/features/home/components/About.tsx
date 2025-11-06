@@ -166,7 +166,7 @@ export function About({ data }: AboutProps) {
                 viewport={{ once: true }}
                 className="relative"
               >
-                <div className="absolute -top-6 -left-4 text-8xl text-[#fbbf24]/20 font-serif leading-none">"</div>
+                <div className="absolute -top-6 -left-4 text-8xl text-[#fbbf24]/20 font-serif leading-none">&quot;</div>
                 <div className="relative bg-white rounded-3xl p-8 sm:p-10 shadow-xl border border-[#d97706]/10">
                   <p className="text-xl sm:text-2xl lg:text-3xl font-medium text-[#3d2817] leading-relaxed italic">
                     {highlight}

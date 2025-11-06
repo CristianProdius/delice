@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Post } from '@/types/strapi';
 import { STRAPI_URL } from '@/lib/strapi/client';
 
@@ -35,10 +36,12 @@ export function BlogList({ posts, locale = 'en' }: BlogListProps) {
                 if (!media) return null;
 
                 return (
-                  <img
+                  <Image
                     src={`${STRAPI_URL}${media.url}`}
                     alt={post.coverImage.alt || post.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                 );
               })()}

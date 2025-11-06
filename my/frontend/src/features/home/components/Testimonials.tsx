@@ -99,7 +99,7 @@ export function Testimonials({ data }: TestimonialsProps) {
 
                   {/* Testimonial Text */}
                   <blockquote className="text-[#3d2817] leading-relaxed mb-8 flex-grow text-base">
-                    "{extractTextFromBlocks(item.description)}"
+                    &quot;{extractTextFromBlocks(item.description)}&quot;
                   </blockquote>
 
                   {/* Decorative Divider */}

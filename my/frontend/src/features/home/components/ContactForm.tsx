@@ -69,7 +69,7 @@ export function ContactForm({ data }: ContactFormProps) {
       setIsSuccess(true);
       setFormData({ name: '', email: '', phone: '', message: '' });
       setConsent(false);
-    } catch (error) {
+    } catch {
       setErrors({ submit: 'Something went wrong. Please try again.' });
     } finally {
       setIsSubmitting(false);
