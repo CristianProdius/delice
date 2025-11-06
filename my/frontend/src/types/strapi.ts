@@ -335,10 +335,65 @@ export interface HeaderAttributes {
   locale: string;
 }
 
+interface NavigationSection {
+  id: number;
+  title: string;
+  links: Array<{
+    id: number;
+    label: string;
+    href: string;
+  }>;
+}
+
+interface ContactInfo {
+  id: number;
+  title: string;
+  email: string;
+  phone: string;
+  address: string;
+  hours: string;
+}
+
+interface SocialLink {
+  id: number;
+  iconName: string;
+  label: string;
+  href: string;
+}
+
+interface Newsletter {
+  id: number;
+  title: string;
+  description: string;
+  placeholder: string;
+  buttonText: string;
+  successMessage: string;
+}
+
+interface Copyright {
+  id: number;
+  companyName: string;
+  rightsText: string;
+  madeWithText: string;
+  locationText: string;
+}
+
 export interface FooterAttributes {
   logo?: {
     data: StrapiData;
   };
+  tagline?: string;
+  description?: string;
+  servicesSection?: NavigationSection;
+  learnSection?: NavigationSection;
+  exploreSection?: NavigationSection;
+  connectSection?: NavigationSection;
+  contactInfo?: ContactInfo;
+  socialTitle?: string;
+  socialLinks?: SocialLink[];
+  newsletter?: Newsletter;
+  certifications?: string;
+  copyright?: Copyright;
   address?: string;
   contactItem?: any[];
   socialLink?: any[];
