@@ -59,6 +59,12 @@ export default async function LocaleLayout({
     console.error('Error fetching footer:', error);
   }
 
+  // Transform footer logo data to match Footer component expectations
+  const footerLogo = footerData?.logo?.data ? {
+    url: (footerData.logo.data as any).url,
+    alternativeText: (footerData.logo.data as any).alternativeText || 'Logo'
+  } : undefined;
+
   return (
     <html lang={locale}>
       <body
@@ -76,7 +82,7 @@ export default async function LocaleLayout({
           {children}
           {footerData && (
             <Footer
-              logo={footerData.logo}
+              logo={footerLogo}
               tagline={footerData.tagline}
               description={footerData.description}
               servicesSection={footerData.servicesSection}

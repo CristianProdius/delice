@@ -14,13 +14,13 @@ export interface StrapiMeta {
 }
 
 // Strapi 5 returns flat data (no attributes wrapper)
-export interface StrapiData<T> {
+export interface StrapiData {
   id: number;
   documentId: string;
 }
 
 // For backwards compatibility and type safety
-export type StrapiEntity<T> = StrapiData<T> & T;
+export type StrapiEntity<T> = StrapiData & T;
 
 export interface StrapiImage {
   id: number;
@@ -206,7 +206,7 @@ export interface ContactFormSection {
 export interface ProductImageComponent {
   id: number;
   image: {
-    data: StrapiData<StrapiImage>;
+    data: StrapiData;
   };
   alt?: string;
   isPrimary?: boolean;
@@ -218,7 +218,7 @@ export interface SEOComponent {
   metaDescription?: string;
   keywords?: string;
   metaImage?: {
-    data: StrapiData<StrapiImage>;
+    data: StrapiData;
   };
   canonicalURL?: string;
 }
@@ -232,7 +232,7 @@ export interface ProductAttributes {
   price: number;
   currency: string;
   category?: {
-    data: StrapiData<CategoryAttributes>;
+    data: StrapiData;
   };
   ingredients?: any;
   allergens?: string;
@@ -306,10 +306,10 @@ export interface PostAttributes {
   tags?: any;
   featured: boolean;
   relatedProducts?: {
-    data: StrapiData<ProductAttributes>[];
+    data: StrapiData[];
   };
   relatedCourses?: {
-    data: StrapiData<CourseAttributes>[];
+    data: StrapiData[];
   };
   seo?: SEOComponent;
   locale: string;
@@ -337,7 +337,7 @@ export interface HeaderAttributes {
 
 export interface FooterAttributes {
   logo?: {
-    data: StrapiData<StrapiImage>;
+    data: StrapiData;
   };
   address?: string;
   contactItem?: any[];
