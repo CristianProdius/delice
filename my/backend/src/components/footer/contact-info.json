@@ -1,19 +1,11 @@
 {
-  "collectionName": "components_elements_highlights",
+  "collectionName": "components_footer_contact_infos",
   "info": {
-    "displayName": "highlights",
-    "description": "Reusable highlight item with optional title, description, and icon"
+    "displayName": "contactInfo",
+    "description": "Contact information section"
   },
   "options": {},
   "attributes": {
-    "text": {
-      "type": "string",
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      }
-    },
     "title": {
       "type": "string",
       "pluginOptions": {
@@ -22,7 +14,13 @@
         }
       }
     },
-    "description": {
+    "email": {
+      "type": "email"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "address": {
       "type": "text",
       "pluginOptions": {
         "i18n": {
@@ -30,9 +28,13 @@
         }
       }
     },
-    "iconName": {
-      "type": "string"
+    "hours": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     }
-  },
-  "config": {}
+  }
 }

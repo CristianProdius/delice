@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FAQSection } from '@/types/strapi';
+import { ChevronDown } from 'lucide-react';
 
 interface FAQProps {
   data: FAQSection;
@@ -25,84 +27,101 @@ function extractTextFromBlocks(blocks: any[]): string {
 
 export function FAQ({ data }: FAQProps) {
   const { header, questions } = data;
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-  const textAlign = header.alignment === 'center'
-    ? 'text-center'
-    : header.alignment === 'right'
-    ? 'text-right'
-    : 'text-left';
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const toggleQuestion = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
-    <section className="py-16 md:py-24 bg-background">
-      <div className="container mx-auto px-4">
+    <section className="py-20 sm:py-24 lg:py-32 bg-[#f5f1ed]">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
         {/* Section Header */}
-        <div className={`mb-12 ${textAlign}`}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
           {header.kicker && (
-            <p className="text-sm md:text-base font-medium text-muted-foreground uppercase tracking-wider mb-2">
+            <p className="text-[#92400e] text-sm font-medium tracking-wider uppercase mb-4">
               {header.kicker}
             </p>
           )}
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-serif text-[#3d2817] mb-4">
             {header.title}
           </h2>
           {header.subtitle && (
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-[#78350f]/70 max-w-2xl mx-auto mt-6">
               {header.subtitle}
             </p>
           )}
-        </div>
+        </motion.div>
 
-        {/* FAQ Accordion */}
-        <div className="max-w-3xl mx-auto space-y-4">
-          {questions.map((item, index) => (
-            <div
-              key={item.id}
-              className="border border-border rounded-lg overflow-hidden bg-card"
-            >
-              {/* Question Button */}
-              <button
-                onClick={() => toggleQuestion(index)}
-                className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-muted/50 transition-colors duration-200"
-              >
-                <span className="text-lg font-semibold text-foreground pr-4">
-                  {item.question}
-                </span>
-                <svg
-                  className={`w-6 h-6 text-muted-foreground flex-shrink-0 transition-transform duration-200 ${
-                    openIndex === index ? 'rotate-180' : ''
-                  }`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
+        {/* Simple FAQ List */}
+        <div className="space-y-3">
+          {questions.map((item, index) => {
+            const isOpen = openIndex === index;
 
-              {/* Answer */}
-              <div
-                className={`overflow-hidden transition-all duration-200 ${
-                  openIndex === index ? 'max-h-96' : 'max-h-0'
-                }`}
+            return (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                viewport={{ once: true }}
               >
-                <div className="px-6 py-4 border-t border-border bg-muted/20">
-                  <p className="text-foreground">
-                    {extractTextFromBlocks(item.answer)}
-                  </p>
+                <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
+                  {/* Question */}
+                  <button
+                    onClick={() => toggleQuestion(index)}
+                    className="w-full px-6 py-5 flex items-center justify-between text-left group"
+                  >
+                    <div className="flex items-center gap-4 flex-1">
+                      {/* Number */}
+                      <span className="text-[#d97706] font-serif text-lg font-medium">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+
+                      {/* Question Text */}
+                      <span className="text-[#3d2817] text-base sm:text-lg font-medium">
+                        {item.question}
+                      </span>
+                    </div>
+
+                    {/* Chevron */}
+                    <ChevronDown
+                      className={`w-5 h-5 text-[#d97706] transition-transform duration-300 flex-shrink-0 ${
+                        isOpen ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+
+                  {/* Answer */}
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: 'auto' }}
+                        exit={{ height: 0 }}
+                        transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-6 pb-6 pl-[4.5rem]">
+                          <div className="pt-2 border-t border-[#d97706]/10">
+                            <p className="text-[#3d2817]/70 text-sm sm:text-base leading-relaxed mt-4">
+                              {extractTextFromBlocks(item.answer)}
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
-              </div>
-            </div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

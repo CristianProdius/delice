@@ -1,7 +1,8 @@
 {
   "collectionName": "components_sections_abouts",
   "info": {
-    "displayName": "about"
+    "displayName": "about",
+    "description": "About section with person details, stats, and highlights"
   },
   "options": {},
   "attributes": {
@@ -9,8 +10,45 @@
       "type": "component",
       "component": "elements.section-header"
     },
+    "personName": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "role": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "roleSubtitle": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "highlight": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
     "intro": {
       "type": "blocks"
+    },
+    "stats": {
+      "type": "component",
+      "component": "elements.stat",
+      "repeatable": true
     },
     "listItem": {
       "type": "component",

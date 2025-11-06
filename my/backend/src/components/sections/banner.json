@@ -75,6 +75,32 @@
         "secondary"
       ],
       "default": "light"
+    },
+    "contactEmail": {
+      "type": "email",
+      "description": "Contact email to display"
+    },
+    "contactPhone": {
+      "type": "string",
+      "description": "Contact phone number"
+    },
+    "contactAddress": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "description": "Contact address or location"
+    },
+    "mascotQuote": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "description": "Quote text for mascot speech bubble"
     }
   }
 }

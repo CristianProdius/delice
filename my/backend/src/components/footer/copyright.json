@@ -1,12 +1,12 @@
 {
-  "collectionName": "components_elements_highlights",
+  "collectionName": "components_footer_copyrights",
   "info": {
-    "displayName": "highlights",
-    "description": "Reusable highlight item with optional title, description, and icon"
+    "displayName": "copyright",
+    "description": "Copyright information"
   },
   "options": {},
   "attributes": {
-    "text": {
+    "companyName": {
       "type": "string",
       "pluginOptions": {
         "i18n": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "title": {
+    "rightsText": {
       "type": "string",
       "pluginOptions": {
         "i18n": {
@@ -22,17 +22,21 @@
         }
       }
     },
-    "description": {
-      "type": "text",
+    "madeWithText": {
+      "type": "string",
       "pluginOptions": {
         "i18n": {
           "localized": true
         }
       }
     },
-    "iconName": {
-      "type": "string"
+    "locationText": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     }
-  },
-  "config": {}
+  }
 }

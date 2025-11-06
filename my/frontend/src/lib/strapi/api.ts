@@ -112,5 +112,18 @@ export async function getHeader(locale: string = 'en') {
 }
 
 export async function getFooter(locale: string = 'en') {
-  return fetchStrapi<StrapiResponse<Footer>>('/footer?populate=*', { locale });
+  // Strapi v5 explicit populate for all nested components
+  const query = [
+    'populate[0]=logo',
+    'populate[1]=servicesSection.links',
+    'populate[2]=learnSection.links',
+    'populate[3]=exploreSection.links',
+    'populate[4]=connectSection.links',
+    'populate[5]=contactInfo',
+    'populate[6]=socialLinks',
+    'populate[7]=newsletter',
+    'populate[8]=copyright',
+  ].join('&');
+
+  return fetchStrapi<StrapiResponse<Footer>>(`/footer?${query}`, { locale });
 }

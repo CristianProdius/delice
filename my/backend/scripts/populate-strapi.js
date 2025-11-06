@@ -76,11 +76,11 @@ const sectionHeader = (kicker='', title='', subtitle='', alignment='center') => 
 });
 
 // CTA button component
-const cta = (text, href) => ({ text, href });
+const cta = (text, href, subtext = '') => ({ text, href, subtext });
 
 // elements.image component (requires existing media ID)
-const imageRef = (mediaId, alt, title = '', caption = '', lazyLoad = true, link = '') => ({
-  media: mediaId, alt, title, caption, lazyLoad, link
+const imageRef = (mediaId, alt, title = '', caption = '', lazyLoad = true, link = '', category = '') => ({
+  media: mediaId, alt, title, caption, lazyLoad, link, category
 });
 
 // Test connection function
@@ -117,12 +117,12 @@ async function upsertPage({ title, slug, sections, seo }) {
     };
 
     if (found.length > 0) {
-      const id = found[0].id;
+      const id = found[0].documentId || found[0].id;
       const res = await api.put(`/pages/${id}`, payload);
-      return { action: 'updated', id: res.data.data.id, title };
+      return { action: 'updated', id: res.data.data.documentId || res.data.data.id, title };
     } else {
       const res = await api.post('/pages', payload);
-      return { action: 'created', id: res.data.data.id, title };
+      return { action: 'created', id: res.data.data.documentId || res.data.data.id, title };
     }
   } catch (error) {
     console.error(`❌ Failed to upsert page "${title}":`, error.response?.data?.error || error.message);
@@ -167,11 +167,16 @@ const MEDIA = {
 
   // about / atelier etc.
   portrait_olesea: IMAGE_ID,
-  
+
+  // testimonial profile images
+  t1: IMAGE_ID,
+  t2: IMAGE_ID,
+  t3: IMAGE_ID,
+
   // backgrounds for banners
   banner_bg1: IMAGE_ID,
   banner_bg2: IMAGE_ID,
-  
+
   // signature
   signature: IMAGE_ID,
 };
@@ -196,29 +201,55 @@ async function createOrUpdateHome() {
       __component: 'sections.services',
       header: sectionHeader(``, `Our Services`, ``),
       items: [
-        { 
-          title: `Custom Chocolate Gifts`, 
-          description: [p(`Personalized boxes, chocolate postcards, and edible art for every occasion.`)], 
-          variant: `service`, 
-          ctaButton: cta(`Learn more`, `/services#custom-gifts`) 
+        {
+          title: `Chocolate School for Adults`,
+          description: [p(`Individual and group sessions for hobbyists and professional pastry chefs. Learn tempering secrets, craft bars, dragees, bonbons, and show-stopping chocolate décor.`)],
+          variant: `service`,
+          iconName: `graduationcap`,
+          accentColor: `#d97706`,
+          gridClass: `col-span-2`,
+          ctaButton: cta(`Learn more`, `/services/chocolate-school-adults`)
         },
-        { 
-          title: `Corporate Packages`, 
-          description: [p(`Elegant branded gifts that delight clients and partners.`)], 
-          variant: `service`, 
-          ctaButton: cta(`Learn more`, `/services#corporate`) 
+        {
+          title: `Children's Chocolate School`,
+          description: [p(`Fun, hands-on classes introduce kids to the world of chocolate through creativity and play. Safe workshops that leave lasting memories!`)],
+          variant: `service`,
+          iconName: `baby`,
+          accentColor: `#f59e0b`,
+          ctaButton: cta(`Learn more`, `/services/childrens-chocolate-school`)
         },
-        { 
-          title: `Wedding & Events`, 
-          description: [p(`Bombonieres, candy bars, and exclusive creations for your special day.`)], 
-          variant: `service`, 
-          ctaButton: cta(`Learn more`, `/services#events`) 
+        {
+          title: `HoReCa Consulting`,
+          description: [p(`Boost revenue and attract guests by adding signature chocolate items to your menu. We make your desserts unforgettable, set up chocolate bars, and create detailed production charts.`)],
+          variant: `service`,
+          iconName: `users`,
+          accentColor: `#92400e`,
+          ctaButton: cta(`Learn more`, `/services/horeca-consulting`)
         },
-        { 
-          title: `Chocolate School`, 
-          description: [p(`Learn tempering, bonbons, and artistry—from beginner to pro.`)], 
-          variant: `service`, 
-          ctaButton: cta(`Learn more`, `/school`) 
+        {
+          title: `Tastings & Events`,
+          description: [p(`Themed experiences for private parties and corporate gatherings—turn any occasion into an unforgettable celebration with premium chocolate tastings and master classes.`)],
+          variant: `service`,
+          iconName: `partypopper`,
+          accentColor: `#b45309`,
+          ctaButton: cta(`Learn more`, `/services/tastings-events`)
+        },
+        {
+          title: `Dessert & Mold Design`,
+          description: [p(`Bespoke chocolate décor and custom molds for your menu. Create exclusive desserts that showcase your brand's style.`)],
+          variant: `service`,
+          iconName: `palette`,
+          accentColor: `#78350f`,
+          ctaButton: cta(`Learn more`, `/services/dessert-mold-design`)
+        },
+        {
+          title: `Custom Chocolate Gifts`,
+          description: [p(`Hand-crafted gift sets, chocolate postcards and business cards, plus décor for your desserts—perfect for making any moment special.`)],
+          variant: `service`,
+          iconName: `gift`,
+          accentColor: `#d97706`,
+          gridClass: `col-span-3`,
+          ctaButton: cta(`Learn more`, `/services/custom-chocolate-gifts`)
         },
       ],
     },
@@ -238,55 +269,99 @@ async function createOrUpdateHome() {
     // sections.about
     {
       __component: 'sections.about',
-      header: sectionHeader(``, `Meet Olesea`, ``),
-      intro: [
-        p(`"For me, chocolate is not just a product—it's a way to create joy, beauty, and unforgettable memories."`),
+      header: sectionHeader(``, `Meet Olesea Kolomiets`, ``),
+      personName: `Olesea Kolomiets`,
+      role: `Master Chocolatier • Professional Taster • Teacher`,
+      roleSubtitle: `Creator of the Creative School of Chocolate and Confectionery Mastery`,
+      highlight: `Everyone is talented and can master anything they sincerely desire — if they let go of fears and doubts`,
+      intro: [],
+      stats: [
+        { number: `15+`, label: `Years of Excellence` },
+        { number: `1000+`, label: `Students Worldwide` },
+        { number: `50+`, label: `Countries Reached` },
       ],
       listItem: [
-        { text: `10+ years of experience in fine chocolate` },
-        { text: `Guided dozens of aspiring chocolatiers in Moldova` },
-        { text: `Passionate about design, taste, and emotion` },
+        {
+          title: `Artisan Excellence`,
+          description: `Creating chocolates for presidents, celebrities, and connoisseurs worldwide`,
+          iconName: `award`
+        },
+        {
+          title: `Master Teacher`,
+          description: `Transforming enthusiasts into confident chocolatiers through personalized guidance`,
+          iconName: `users`
+        },
+        {
+          title: `Global Recognition`,
+          description: `Chocolates traveled to the world's most prestigious venues and events`,
+          iconName: `trending-up`
+        },
       ],
-      portrait: imageRef(MEDIA.portrait_olesea, `Portrait of Olesea`),
-      ctaButton: cta(`Read My Story`, `/about`),
+      portrait: imageRef(MEDIA.portrait_olesea, `Portrait of Olesea Kolomiets`),
+      ctaButton: cta(`Discover My Journey`, `/about`),
     },
 
     // sections.gallery
     {
       __component: 'sections.gallery',
-      header: sectionHeader(``, `Signature Work`, ``),
+      header: sectionHeader(`PORTFOLIO`, `Artisan Creations`, `Each piece tells a story of passion, precision, and the pursuit of chocolate perfection`),
       layout: `grid`,
       columns: 3,
       images: [
-        imageRef(MEDIA.g1, `Bonbons`),
-        imageRef(MEDIA.g2, `Gift set`),
-        imageRef(MEDIA.g3, `Wedding candy bar`),
+        imageRef(MEDIA.g1, `Elegant bonbons`, `Artisan Bonbons`, `Hand-crafted with premium Belgian chocolate`, true, '', 'recipes'),
+        imageRef(MEDIA.g2, `Luxury gift set`, `Premium Gift Collections`, `Perfect for special occasions`, true, '', 'cakes'),
+        imageRef(MEDIA.g3, `Wedding candy bar`, `Wedding Elegance`, `Custom candy bars for your special day`, true, '', 'seasonal'),
+        imageRef(MEDIA.g4, `Chocolate sculpture`, `Artistic Sculptures`, `Edible masterpieces`, true, '', 'sculptures'),
+        imageRef(MEDIA.g5, `Seasonal treats`, `Holiday Special`, `Festive chocolate creations`, true, '', 'seasonal'),
+        imageRef(MEDIA.g6, `Custom cake décor`, `Cake Decorations`, `Elegant chocolate finishing touches`, true, '', 'cakes'),
       ],
     },
 
     // sections.testimonials
     {
       __component: 'sections.testimonials',
-      header: sectionHeader(``, `What Clients Say`, ``),
+      header: sectionHeader(`TESTIMONIALS`, `What Clients Say`, `Real stories from our chocolate-loving community`),
       items: [
-        { title: `Ana & Mihai`, description: [p(`"The chocolates were a showstopper at our wedding."`)], variant: `testimonial` },
-        { title: `Irina`, description: [p(`"The workshop was magical—learned to temper and make bars."`)], variant: `testimonial` },
-        { title: `Dumitru`, description: [p(`"Corporate gifts: premium quality and beautiful presentation."`)], variant: `testimonial` },
+        {
+          title: `Ana Popescu`,
+          badge: `Wedding Client`,
+          description: [p(`The chocolates were absolutely divine! They made our wedding reception truly unforgettable. Every guest asked where we got them. Olesea's attention to detail and artistry is unmatched.`)],
+          variant: `testimonial`,
+          image: MEDIA.t1
+        },
+        {
+          title: `Mihai Ionescu`,
+          badge: `Workshop Participant`,
+          description: [p(`The chocolate-making workshop was an incredible experience. I learned professional techniques and discovered my passion for chocolate. Olesea is an amazing teacher!`)],
+          variant: `testimonial`,
+          image: MEDIA.t2
+        },
+        {
+          title: `Elena Rusu`,
+          badge: `Corporate Client`,
+          description: [p(`We ordered custom chocolate gifts for our company event. The quality, presentation, and taste exceeded all expectations. Our clients were impressed and so were we!`)],
+          variant: `testimonial`,
+          image: MEDIA.t3
+        },
       ],
     },
 
     // sections.banner with variant: 'cta'
     {
       __component: 'sections.banner',
-      header: sectionHeader(``, `Bring Joy Through Chocolate`, `From a single truffle to a full candy bar—we make it special.`),
-      description: [p(`Contact us to create your perfect chocolate experience.`)],
+      header: sectionHeader(`SWEET BEGINNINGS AWAIT`, `Let's Create Something Extraordinary Together`, ``),
+      description: [p(`Whether you're dreaming of custom chocolates for your special event or eager to master the art yourself, our doors are always open to fellow chocolate enthusiasts.`)],
       variant: `cta`,
       layout: `center`,
       theme: `primary`,
       ctaButtons: [
-        cta(`Get in Touch`, `/contact`),
-        cta(`View Services`, `/services`)
+        cta(`Start Your Journey`, `/contact`, `Book a Consultation`),
+        cta(`Visit Our Atelier`, `/contact`, `See the Magic Happen`)
       ],
+      contactEmail: `hello@delicemy.com`,
+      contactPhone: `+373 123 456 789`,
+      contactAddress: `Chisinau, Moldova`,
+      mascotQuote: `Every masterpiece begins with a single, sweet idea...`
     },
 
     // sections.faq
@@ -479,18 +554,38 @@ async function createOrUpdateAbout() {
     
     {
       __component: 'sections.about',
-      header: sectionHeader(``, `Meet Olesea — Master Chocolatier`, ``),
+      header: sectionHeader(``, `Meet Olesea Kolomiets — Master Chocolatier`, ``),
+      personName: `Olesea Kolomiets`,
+      role: `Master Chocolatier • Professional Taster • Teacher`,
+      roleSubtitle: `Creator of the Creative School of Chocolate and Confectionery Mastery`,
+      highlight: `Everyone is talented and can master anything they sincerely desire — if they let go of fears and doubts`,
       intro: [
         p(`Chocolate is my medium for joy, beauty, and memory. Trained in Europe, I combine traditional methods with innovative design.`),
         p(`What started as a love for sweets transformed into a mission: to create moments of joy through exceptional chocolate experiences.`),
       ],
-      listItem: [
-        { text: `Founded DeliceMy with a vision for artisan excellence` },
-        { text: `Trained hundreds of students in chocolate making` },
-        { text: `Pioneered custom corporate chocolate in Chisinau` },
-        { text: `Member of International Association of Chocolatiers` },
+      stats: [
+        { number: `15+`, label: `Years of Excellence` },
+        { number: `1000+`, label: `Students Worldwide` },
+        { number: `50+`, label: `Countries Reached` },
       ],
-      portrait: imageRef(MEDIA.portrait_olesea, `Olesea portrait`),
+      listItem: [
+        {
+          title: `Artisan Excellence`,
+          description: `Creating chocolates for presidents, celebrities, and connoisseurs worldwide`,
+          iconName: `award`
+        },
+        {
+          title: `Master Teacher`,
+          description: `Transforming enthusiasts into confident chocolatiers through personalized guidance`,
+          iconName: `users`
+        },
+        {
+          title: `Global Recognition`,
+          description: `Chocolates traveled to the world's most prestigious venues and events`,
+          iconName: `trending-up`
+        },
+      ],
+      portrait: imageRef(MEDIA.portrait_olesea, `Olesea Kolomiets portrait`),
       ctaButton: cta(`Start Your Chocolate Journey`, `/contact`),
     },
     
@@ -888,12 +983,12 @@ async function upsertService({ title, slug, shortDescription, description, icon,
     };
 
     if (found.length > 0) {
-      const id = found[0].id;
+      const id = found[0].documentId || found[0].id;
       const res = await api.put(`/services/${id}`, payload);
-      return { action: 'updated', id: res.data.data.id, title };
+      return { action: 'updated', id: res.data.data.documentId || res.data.data.id, title };
     } else {
       const res = await api.post('/services', payload);
-      return { action: 'created', id: res.data.data.id, title };
+      return { action: 'created', id: res.data.data.documentId || res.data.data.id, title };
     }
   } catch (error) {
     console.error(`❌ Failed to upsert service "${title}":`, error.response?.data?.error || error.message);
@@ -1094,12 +1189,12 @@ async function upsertPost(postData) {
     };
 
     if (existing && existing.length > 0) {
-      const id = existing[0].id;
+      const id = existing[0].documentId || existing[0].id;
       const res = await api.put(`/posts/${id}`, payload);
       return { id, action: 'updated', data: res.data.data };
     } else {
       const res = await api.post('/posts', payload);
-      return { id: res.data.data.id, action: 'created', data: res.data.data };
+      return { id: res.data.data.documentId || res.data.data.id, action: 'created', data: res.data.data };
     }
   } catch (err) {
     console.error(`Error upserting post "${postData.title}":`, err?.response?.data || err.message);
@@ -1446,27 +1541,97 @@ async function createOrUpdateHeader() {
 async function createOrUpdateFooter() {
   try {
     const footerData = {
-      address: 'Chisinau, Moldova\nStr. Example 123',
-      contactItem: [
-        { label: 'Phone', value: '+373 12 345 678' },
-        { label: 'Email', value: 'info@delicemy.md' },
-        { label: 'WhatsApp', value: '+373 12 345 678' }
+      logo: IMAGE_ID, // Reference to uploaded logo
+      tagline: 'Handcrafted Chocolate Excellence Since 2010',
+      description: 'DeliceMy is a premium chocolate atelier in Chisinau, Moldova. We create artisanal chocolates, teach the craft, and help businesses elevate their dessert offerings.',
+
+      // Services Section
+      servicesSection: {
+        title: 'Services',
+        links: [
+          { label: 'Chocolate School', href: '/school' },
+          { label: 'HoReCa Consulting', href: '/services/horeca-consulting' },
+          { label: 'Custom Gifts', href: '/services/custom-chocolate-gifts' },
+          { label: 'Events & Tastings', href: '/services/tastings-events' }
+        ]
+      },
+
+      // Learn Section
+      learnSection: {
+        title: 'Learn',
+        links: [
+          { label: 'About Us', href: '/about' },
+          { label: 'Blog', href: '/blog' },
+          { label: 'Courses', href: '/school' },
+          { label: 'FAQ', href: '/contact#faq' }
+        ]
+      },
+
+      // Explore Section
+      exploreSection: {
+        title: 'Explore',
+        links: [
+          { label: 'Shop', href: '/shop' },
+          { label: 'Gallery', href: '/about#gallery' },
+          { label: 'Testimonials', href: '/about#testimonials' },
+          { label: 'Portfolio', href: '/services#portfolio' }
+        ]
+      },
+
+      // Connect Section
+      connectSection: {
+        title: 'Connect',
+        links: [
+          { label: 'Contact Us', href: '/contact' },
+          { label: 'Book a Class', href: '/school' },
+          { label: 'Get Quote', href: '/contact' },
+          { label: 'Visit Atelier', href: '/contact' }
+        ]
+      },
+
+      // Contact Information
+      contactInfo: {
+        title: 'Get In Touch',
+        email: 'info@delicemy.md',
+        phone: '+373 12 345 678',
+        address: 'Central Chisinau, Moldova',
+        hours: 'Mon-Fri: 10:00-18:00, Sat: 10:00-16:00'
+      },
+
+      // Social Links
+      socialTitle: 'Follow Our Chocolate Journey',
+      socialLinks: [
+        { iconName: 'instagram', label: 'Instagram', href: 'https://instagram.com/delicemy' },
+        { iconName: 'facebook', label: 'Facebook', href: 'https://facebook.com/delicemy' },
+        { iconName: 'youtube', label: 'YouTube', href: 'https://youtube.com/@delicemy' },
+        { iconName: 'mail', label: 'Email', href: 'mailto:info@delicemy.md' }
       ],
-      socialLink: [
-        { platform: 'Facebook', url: 'https://facebook.com/delicemy' },
-        { platform: 'Instagram', url: 'https://instagram.com/delicemy' },
-        { platform: 'TikTok', url: 'https://tiktok.com/@delicemy' }
-      ],
-      bottomNote: '© 2025 DeliceMy. Handcrafted with love in Chisinau.',
-      legalLinks: [
-        { label: 'Privacy Policy', url: '/privacy-policy', newTab: false },
-        { label: 'Terms of Service', url: '/terms', newTab: false }
-      ]
+
+      // Newsletter
+      newsletter: {
+        title: 'Stay Sweet',
+        description: 'Subscribe to our newsletter for exclusive recipes, chocolate tips, and special offers.',
+        placeholder: 'Enter your email',
+        buttonText: 'Subscribe',
+        successMessage: 'Thank you for subscribing! Check your inbox for a sweet welcome.'
+      },
+
+      // Certifications
+      certifications: 'Certified Professional Chocolatier • International Chocolate Taster • Award-Winning Atelier',
+
+      // Copyright
+      copyright: {
+        companyName: 'DeliceMy',
+        rightsText: 'All rights reserved.',
+        madeWithText: 'Handcrafted with love in Chisinau',
+        locationText: 'Chisinau, Moldova'
+      }
     };
 
     const payload = {
       data: {
         ...footerData,
+        locale: LOCALE,
         publishedAt: AUTO_PUBLISH ? new Date().toISOString() : null
       }
     };

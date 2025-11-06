@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_footer_navigation_sections",
+  "info": {
+    "displayName": "navigationSection",
+    "description": "Navigation section with title and links"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "links": {
+      "type": "component",
+      "repeatable": true,
+      "component": "elements.link"
+    }
+  }
+}

@@ -15,6 +15,9 @@ export async function fetchStrapi<T>(
   const url = new URL(`/api${path}`, STRAPI_URL);
   url.searchParams.set('locale', locale);
 
+  // Only add default populate if path doesn't already contain populate parameters
+  const pathHasPopulate = path.includes('populate');
+
   // For pages, use wildcard populate for all sections
   if (populateDeep) {
     // Simpler approach: populate everything 2 levels deep
@@ -26,14 +29,21 @@ export async function fetchStrapi<T>(
     url.searchParams.set('populate[5]', 'sections.ctaButtons');
     url.searchParams.set('populate[6]', 'sections.items');
     url.searchParams.set('populate[7]', 'sections.items.ctaButton');
-    url.searchParams.set('populate[8]', 'sections.listItem');
-    url.searchParams.set('populate[9]', 'sections.portrait');
-    url.searchParams.set('populate[10]', 'sections.portrait.media');
-    url.searchParams.set('populate[11]', 'sections.images');
-    url.searchParams.set('populate[12]', 'sections.images.media');
-    url.searchParams.set('populate[13]', 'sections.questions');
-    url.searchParams.set('populate[14]', 'seo');
-  } else {
+    url.searchParams.set('populate[8]', 'sections.items.image');
+    url.searchParams.set('populate[9]', 'sections.items.icon');
+    url.searchParams.set('populate[10]', 'sections.listItem');
+    url.searchParams.set('populate[11]', 'sections.stats');
+    url.searchParams.set('populate[12]', 'sections.portrait');
+    url.searchParams.set('populate[13]', 'sections.portrait.media');
+    url.searchParams.set('populate[14]', 'sections.images');
+    url.searchParams.set('populate[15]', 'sections.images.media');
+    url.searchParams.set('populate[16]', 'sections.questions');
+    url.searchParams.set('populate[17]', 'seo');
+    url.searchParams.set('populate[18]', 'sections.foregroundImage');
+    url.searchParams.set('populate[19]', 'sections.foregroundImage.media');
+    url.searchParams.set('populate[20]', 'sections.signature');
+  } else if (!pathHasPopulate) {
+    // Only set default populate if not already in path
     url.searchParams.set('populate', '*');
   }
 

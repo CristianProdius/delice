@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_footer_social_links",
+  "info": {
+    "displayName": "socialLink",
+    "description": "Social media link with icon"
+  },
+  "options": {},
+  "attributes": {
+    "iconName": {
+      "type": "string",
+      "required": true,
+      "description": "Icon name: instagram, facebook, twitter, youtube, mail"
+    },
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "href": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

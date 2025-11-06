@@ -75,11 +75,19 @@ export interface ElementsContacts extends Struct.ComponentSchema {
 export interface ElementsCtaButton extends Struct.ComponentSchema {
   collectionName: 'components_elements_cta_buttons';
   info: {
+    description: 'Call-to-action button with optional subtext';
     displayName: 'ctaButton';
   };
   attributes: {
-    href: Schema.Attribute.String;
+    href: Schema.Attribute.String & Schema.Attribute.Required;
+    subtext: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     text: Schema.Attribute.String &
+      Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -145,10 +153,24 @@ export interface ElementsFormField extends Struct.ComponentSchema {
 export interface ElementsHighlights extends Struct.ComponentSchema {
   collectionName: 'components_elements_highlights';
   info: {
+    description: 'Reusable highlight item with optional title, description, and icon';
     displayName: 'highlights';
   };
   attributes: {
+    description: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    iconName: Schema.Attribute.String;
     text: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    title: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -177,6 +199,12 @@ export interface ElementsImage extends Struct.ComponentSchema {
           localized: true;
         };
       }>;
+    category: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     lazyLoad: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     link: Schema.Attribute.String;
     media: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
@@ -198,6 +226,24 @@ export interface ElementsLegalLinks extends Struct.ComponentSchema {
     label: Schema.Attribute.String;
     newTab: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     url: Schema.Attribute.String;
+  };
+}
+
+export interface ElementsLink extends Struct.ComponentSchema {
+  collectionName: 'components_elements_links';
+  info: {
+    description: 'Simple link with label and href';
+    displayName: 'link';
+  };
+  attributes: {
+    href: Schema.Attribute.String & Schema.Attribute.Required;
+    label: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
   };
 }
 
@@ -263,6 +309,164 @@ export interface ElementsSocialLink extends Struct.ComponentSchema {
   };
 }
 
+export interface ElementsStat extends Struct.ComponentSchema {
+  collectionName: 'components_elements_stats';
+  info: {
+    description: 'Statistics display with number and label';
+    displayName: 'stat';
+  };
+  attributes: {
+    label: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    number: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+  };
+}
+
+export interface FooterContactInfo extends Struct.ComponentSchema {
+  collectionName: 'components_footer_contact_infos';
+  info: {
+    description: 'Contact information section';
+    displayName: 'contactInfo';
+  };
+  attributes: {
+    address: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    email: Schema.Attribute.Email;
+    hours: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    phone: Schema.Attribute.String;
+    title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+  };
+}
+
+export interface FooterCopyright extends Struct.ComponentSchema {
+  collectionName: 'components_footer_copyrights';
+  info: {
+    description: 'Copyright information';
+    displayName: 'copyright';
+  };
+  attributes: {
+    companyName: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    locationText: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    madeWithText: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    rightsText: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+  };
+}
+
+export interface FooterNavigationSection extends Struct.ComponentSchema {
+  collectionName: 'components_footer_navigation_sections';
+  info: {
+    description: 'Navigation section with title and links';
+    displayName: 'navigationSection';
+  };
+  attributes: {
+    links: Schema.Attribute.Component<'elements.link', true>;
+    title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+  };
+}
+
+export interface FooterNewsletter extends Struct.ComponentSchema {
+  collectionName: 'components_footer_newsletters';
+  info: {
+    description: 'Newsletter subscription section';
+    displayName: 'newsletter';
+  };
+  attributes: {
+    buttonText: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    description: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    placeholder: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    successMessage: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+  };
+}
+
+export interface FooterSocialLink extends Struct.ComponentSchema {
+  collectionName: 'components_footer_social_links';
+  info: {
+    description: 'Social media link with icon';
+    displayName: 'socialLink';
+  };
+  attributes: {
+    href: Schema.Attribute.String & Schema.Attribute.Required;
+    iconName: Schema.Attribute.String & Schema.Attribute.Required;
+    label: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface NavigationMenuItems extends Struct.ComponentSchema {
   collectionName: 'components_navigation_menu_items';
   info: {
@@ -278,14 +482,40 @@ export interface NavigationMenuItems extends Struct.ComponentSchema {
 export interface SectionsAbout extends Struct.ComponentSchema {
   collectionName: 'components_sections_abouts';
   info: {
+    description: 'About section with person details, stats, and highlights';
     displayName: 'about';
   };
   attributes: {
     ctaButton: Schema.Attribute.Component<'elements.cta-button', false>;
     header: Schema.Attribute.Component<'elements.section-header', false>;
+    highlight: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     intro: Schema.Attribute.Blocks;
     listItem: Schema.Attribute.Component<'elements.highlights', true>;
+    personName: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     portrait: Schema.Attribute.Component<'elements.image', false>;
+    role: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    roleSubtitle: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    stats: Schema.Attribute.Component<'elements.stat', true>;
   };
 }
 
@@ -297,6 +527,14 @@ export interface SectionsBanner extends Struct.ComponentSchema {
   };
   attributes: {
     background: Schema.Attribute.Component<'elements.image', false>;
+    contactAddress: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    contactEmail: Schema.Attribute.Email;
+    contactPhone: Schema.Attribute.String;
     ctaButtons: Schema.Attribute.Component<'elements.cta-button', true> &
       Schema.Attribute.SetMinMax<
         {
@@ -319,6 +557,12 @@ export interface SectionsBanner extends Struct.ComponentSchema {
       }>;
     layout: Schema.Attribute.Enumeration<['left', 'center', 'right', 'split']> &
       Schema.Attribute.DefaultTo<'center'>;
+    mascotQuote: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     signature: Schema.Attribute.Media<'images'>;
     theme: Schema.Attribute.Enumeration<
       ['light', 'dark', 'primary', 'secondary']
@@ -503,9 +747,16 @@ declare module '@strapi/strapi' {
       'elements.highlights': ElementsHighlights;
       'elements.image': ElementsImage;
       'elements.legal-links': ElementsLegalLinks;
+      'elements.link': ElementsLink;
       'elements.product-image': ElementsProductImage;
       'elements.section-header': ElementsSectionHeader;
       'elements.social-link': ElementsSocialLink;
+      'elements.stat': ElementsStat;
+      'footer.contact-info': FooterContactInfo;
+      'footer.copyright': FooterCopyright;
+      'footer.navigation-section': FooterNavigationSection;
+      'footer.newsletter': FooterNewsletter;
+      'footer.social-link': FooterSocialLink;
       'navigation.menu-items': NavigationMenuItems;
       'sections.about': SectionsAbout;
       'sections.banner': SectionsBanner;

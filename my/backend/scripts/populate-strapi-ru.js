@@ -78,11 +78,11 @@ const sectionHeader = (kicker='', title='', subtitle='', alignment='center') => 
 });
 
 // CTA button component
-const cta = (text, href) => ({ text, href });
+const cta = (text, href, subtext = '') => ({ text, href, subtext });
 
 // elements.image component (requires existing media ID)
-const imageRef = (mediaId, alt, title = '', caption = '', lazyLoad = true, link = '') => ({
-  media: mediaId, alt, title, caption, lazyLoad, link
+const imageRef = (mediaId, alt, title = '', caption = '', lazyLoad = true, link = '', category = '') => ({
+  media: mediaId, alt, title, caption, lazyLoad, link, category
 });
 
 // Test connection function
@@ -270,6 +270,11 @@ const MEDIA = {
   // about / atelier etc.
   portrait_olesea: IMAGE_ID,
 
+  // testimonial profile images
+  t1: IMAGE_ID,
+  t2: IMAGE_ID,
+  t3: IMAGE_ID,
+
   // backgrounds for banners
   banner_bg1: IMAGE_ID,
   banner_bg2: IMAGE_ID,
@@ -299,28 +304,54 @@ async function createOrUpdateHome() {
       header: sectionHeader(``, `Наши услуги`, ``),
       items: [
         {
+          title: `Шоколадная школа для взрослых`,
+          description: [p(`Индивидуальные и групповые занятия для любителей и профессиональных кондитеров. Изучите секреты темперирования, плитки, драже, конфеты и эффектное декорирование.`)],
+          variant: `service`,
+          iconName: `graduationcap`,
+          accentColor: `#d97706`,
+          gridClass: `col-span-2`,
+          ctaButton: cta(`Узнать больше`, `/services/chocolate-school-adults`)
+        },
+        {
+          title: `Детская шоколадная школа`,
+          description: [p(`Весёлые практические занятия знакомят детей с миром шоколада через творчество и игру. Безопасные мастер-классы, которые оставляют долговременные воспоминания!`)],
+          variant: `service`,
+          iconName: `baby`,
+          accentColor: `#f59e0b`,
+          ctaButton: cta(`Узнать больше`, `/services/childrens-chocolate-school`)
+        },
+        {
+          title: `Консалтинг для HoReCa`,
+          description: [p(`Увеличьте доход и привлеките гостей, добавив фирменные шоколадные изделия в ваше меню. Мы делаем ваши десерты незабываемыми, настраиваем шоколадные бары и создаём подробные производственные карты.`)],
+          variant: `service`,
+          iconName: `users`,
+          accentColor: `#92400e`,
+          ctaButton: cta(`Узнать больше`, `/services/horeca-consulting`)
+        },
+        {
+          title: `Дегустации и мероприятия`,
+          description: [p(`Тематические впечатления для частных вечеринок и корпоративных встреч — превратите любой случай в незабываемое празднование с премиум дегустациями шоколада и мастер-классами.`)],
+          variant: `service`,
+          iconName: `partypopper`,
+          accentColor: `#b45309`,
+          ctaButton: cta(`Узнать больше`, `/services/tastings-events`)
+        },
+        {
+          title: `Дизайн десертов и форм`,
+          description: [p(`Индивидуальное шоколадное декорирование и формы на заказ для вашего меню. Создавайте эксклюзивные десерты, которые демонстрируют стиль вашего бренда.`)],
+          variant: `service`,
+          iconName: `palette`,
+          accentColor: `#78350f`,
+          ctaButton: cta(`Узнать больше`, `/services/dessert-mold-design`)
+        },
+        {
           title: `Индивидуальные шоколадные подарки`,
-          description: [p(`Персонализированные коробки, шоколадные открытки и съедобное искусство для любого случая.`)],
+          description: [p(`Наборы ручной работы, шоколадные открытки и визитки, плюс декор для ваших десертов — идеально для того, чтобы сделать любой момент особенным.`)],
           variant: `service`,
-          ctaButton: cta(`Узнать больше`, `/services#custom-gifts`)
-        },
-        {
-          title: `Корпоративные наборы`,
-          description: [p(`Элегантные фирменные подарки, которые порадуют клиентов и партнёров.`)],
-          variant: `service`,
-          ctaButton: cta(`Узнать больше`, `/services#corporate`)
-        },
-        {
-          title: `Свадьбы и мероприятия`,
-          description: [p(`Бомбоньерки, кэнди-бары и эксклюзивные творения для вашего особенного дня.`)],
-          variant: `service`,
-          ctaButton: cta(`Узнать больше`, `/services#events`)
-        },
-        {
-          title: `Шоколадная школа`,
-          description: [p(`Научитесь темперированию, изготовлению конфет и художественному оформлению — от новичка до профи.`)],
-          variant: `service`,
-          ctaButton: cta(`Узнать больше`, `/school`)
+          iconName: `gift`,
+          accentColor: `#d97706`,
+          gridClass: `col-span-3`,
+          ctaButton: cta(`Узнать больше`, `/services/custom-chocolate-gifts`)
         },
       ],
     },
@@ -340,55 +371,99 @@ async function createOrUpdateHome() {
     // sections.about
     {
       __component: 'sections.about',
-      header: sectionHeader(``, `Познакомьтесь с Олесей`, ``),
-      intro: [
-        p(`"Для меня шоколад — это не просто продукт, это способ создавать радость, красоту и незабываемые воспоминания."`),
+      header: sectionHeader(``, `Познакомьтесь с Олесей Коломиец`, ``),
+      personName: `Олеся Коломиец`,
+      role: `Мастер-шоколатье • Профессиональный дегустатор • Преподаватель`,
+      roleSubtitle: `Создатель Творческой школы шоколада и кондитерского мастерства`,
+      highlight: `Каждый талантлив и может освоить всё, что искренне желает — если отпустит страхи и сомнения`,
+      intro: [],
+      stats: [
+        { number: `15+`, label: `Лет мастерства` },
+        { number: `1000+`, label: `Учеников по всему миру` },
+        { number: `50+`, label: `Стран охвачено` },
       ],
       listItem: [
-        { text: `Более 10 лет опыта в создании премиального шоколада` },
-        { text: `Обучила десятки начинающих шоколатье в Молдове` },
-        { text: `Страстно увлечена дизайном, вкусом и эмоциями` },
+        {
+          title: `Ремесленное совершенство`,
+          description: `Создание шоколада для президентов, знаменитостей и ценителей по всему миру`,
+          iconName: `award`
+        },
+        {
+          title: `Мастер-преподаватель`,
+          description: `Превращение энтузиастов в уверенных шоколатье через персонализированное руководство`,
+          iconName: `users`
+        },
+        {
+          title: `Мировое признание`,
+          description: `Шоколад побывал в самых престижных местах и на мероприятиях мира`,
+          iconName: `trending-up`
+        },
       ],
-      portrait: imageRef(MEDIA.portrait_olesea, `Портрет Олеси`),
-      ctaButton: cta(`Читать мою историю`, `/about`),
+      portrait: imageRef(MEDIA.portrait_olesea, `Портрет Олеси Коломиец`),
+      ctaButton: cta(`Узнать мою историю`, `/about`),
     },
 
     // sections.gallery
     {
       __component: 'sections.gallery',
-      header: sectionHeader(``, `Наши работы`, ``),
+      header: sectionHeader(`ПОРТФОЛИО`, `Ремесленные творения`, `Каждое изделие рассказывает историю страсти, точности и стремления к совершенству шоколада`),
       layout: `grid`,
       columns: 3,
       images: [
-        imageRef(MEDIA.g1, `Конфеты`),
-        imageRef(MEDIA.g2, `Подарочный набор`),
-        imageRef(MEDIA.g3, `Свадебный кэнди-бар`),
+        imageRef(MEDIA.g1, `Элегантные конфеты`, `Ремесленные конфеты`, `Изготовлено вручную из премиального бельгийского шоколада`, true, '', 'рецепты'),
+        imageRef(MEDIA.g2, `Роскошный подарочный набор`, `Премиальные подарочные коллекции`, `Идеально для особых случаев`, true, '', 'торты'),
+        imageRef(MEDIA.g3, `Свадебный кэнди-бар`, `Свадебная элегантность`, `Индивидуальные кэнди-бары для вашего особого дня`, true, '', 'сезонные'),
+        imageRef(MEDIA.g4, `Шоколадная скульптура`, `Художественные скульптуры`, `Съедобные шедевры`, true, '', 'скульптуры'),
+        imageRef(MEDIA.g5, `Сезонные угощения`, `Праздничные специальные`, `Праздничные шоколадные творения`, true, '', 'сезонные'),
+        imageRef(MEDIA.g6, `Декор для тортов`, `Украшения для тортов`, `Элегантные шоколадные штрихи`, true, '', 'торты'),
       ],
     },
 
     // sections.testimonials
     {
       __component: 'sections.testimonials',
-      header: sectionHeader(``, `Отзывы клиентов`, ``),
+      header: sectionHeader(`ОТЗЫВЫ`, `Что говорят клиенты`, `Реальные истории от нашего сообщества любителей шоколада`),
       items: [
-        { title: `Анна и Михай`, description: [p(`"Шоколад стал главной звездой нашей свадьбы."`)], variant: `testimonial` },
-        { title: `Ирина`, description: [p(`"Мастер-класс был волшебным — научилась темперировать и делать плитки."`)], variant: `testimonial` },
-        { title: `Дмитрий`, description: [p(`"Корпоративные подарки: премиальное качество и красивая презентация."`)], variant: `testimonial` },
+        {
+          title: `Анна Попеску`,
+          badge: `Свадебный клиент`,
+          description: [p(`Шоколад был просто божественным! Он сделал наш свадебный прием по-настоящему незабываемым. Каждый гость спрашивал, где мы их взяли. Внимание к деталям и мастерство Олеси не имеют себе равных.`)],
+          variant: `testimonial`,
+          image: MEDIA.t1
+        },
+        {
+          title: `Михай Ионеску`,
+          badge: `Участник мастер-класса`,
+          description: [p(`Мастер-класс по изготовлению шоколада был невероятным опытом. Я освоил профессиональные техники и открыл свою страсть к шоколаду. Олеся — потрясающий учитель!`)],
+          variant: `testimonial`,
+          image: MEDIA.t2
+        },
+        {
+          title: `Елена Русу`,
+          badge: `Корпоративный клиент`,
+          description: [p(`Мы заказали индивидуальные шоколадные подарки для корпоративного мероприятия. Качество, презентация и вкус превзошли все ожидания. Наши клиенты были впечатлены, и мы тоже!`)],
+          variant: `testimonial`,
+          image: MEDIA.t3
+        },
       ],
     },
 
     // sections.banner with variant: 'cta'
     {
       __component: 'sections.banner',
-      header: sectionHeader(``, `Дарите радость через шоколад`, `От одной конфеты до целого кэнди-бара — мы делаем это особенным.`),
-      description: [p(`Свяжитесь с нами, чтобы создать ваш идеальный шоколадный опыт.`)],
+      header: sectionHeader(`СЛАДКОЕ НАЧАЛО ЖДЕТ`, `Давайте Создадим Что-то Необыкновенное Вместе`, ``),
+      description: [p(`Мечтаете ли вы о шоколаде ручной работы для особого события или хотите освоить это искусство сами, наши двери всегда открыты для любителей шоколада.`)],
       variant: `cta`,
       layout: `center`,
       theme: `primary`,
       ctaButtons: [
-        cta(`Связаться с нами`, `/contact`),
-        cta(`Посмотреть услуги`, `/services`)
+        cta(`Начните Свой Путь`, `/contact`, `Записаться на Консультацию`),
+        cta(`Посетите Наше Ателье`, `/contact`, `Увидьте Волшебство`)
       ],
+      contactEmail: `hello@delicemy.com`,
+      contactPhone: `+373 123 456 789`,
+      contactAddress: `Кишинев, Молдова`,
+      mascotQuote: `Каждый шедевр начинается с одной сладкой идеи...`
     },
 
     // sections.faq
@@ -581,18 +656,38 @@ async function createOrUpdateAbout() {
 
     {
       __component: 'sections.about',
-      header: sectionHeader(``, `Познакомьтесь с Олесей — Мастером-шоколатье`, ``),
+      header: sectionHeader(``, `Познакомьтесь с Олесей Коломиец — Мастером-шоколатье`, ``),
+      personName: `Олеся Коломиец`,
+      role: `Мастер-шоколатье • Профессиональный дегустатор • Преподаватель`,
+      roleSubtitle: `Создатель Творческой школы шоколада и кондитерского мастерства`,
+      highlight: `Каждый талантлив и может освоить всё, что искренне желает — если отпустит страхи и сомнения`,
       intro: [
         p(`Шоколад — это моя среда для радости, красоты и памяти. Обученная в Европе, я сочетаю традиционные методы с инновационным дизайном.`),
         p(`То, что начиналось как любовь к сладостям, превратилось в миссию: создавать моменты радости через исключительные шоколадные впечатления.`),
       ],
-      listItem: [
-        { text: `Основала DeliceMy с видением ремесленного совершенства` },
-        { text: `Обучила сотни студентов изготовлению шоколада` },
-        { text: `Пионер корпоративного шоколада на заказ в Кишинёве` },
-        { text: `Член Международной ассоциации шоколатье` },
+      stats: [
+        { number: `15+`, label: `Лет мастерства` },
+        { number: `1000+`, label: `Учеников по всему миру` },
+        { number: `50+`, label: `Стран охвачено` },
       ],
-      portrait: imageRef(MEDIA.portrait_olesea, `Портрет Олеси`),
+      listItem: [
+        {
+          title: `Ремесленное совершенство`,
+          description: `Создание шоколада для президентов, знаменитостей и ценителей по всему миру`,
+          iconName: `award`
+        },
+        {
+          title: `Мастер-преподаватель`,
+          description: `Превращение энтузиастов в уверенных шоколатье через персонализированное руководство`,
+          iconName: `users`
+        },
+        {
+          title: `Мировое признание`,
+          description: `Шоколад побывал в самых престижных местах и на мероприятиях мира`,
+          iconName: `trending-up`
+        },
+      ],
+      portrait: imageRef(MEDIA.portrait_olesea, `Портрет Олеси Коломиец`),
       ctaButton: cta(`Начните своё шоколадное путешествие`, `/contact`),
     },
 
@@ -1346,28 +1441,101 @@ async function createOrUpdateHeader() {
 // Footer Single Type - Russian localization
 async function createOrUpdateFooter() {
   try {
+    // Get IMAGE_ID from English version
+    const IMAGE_ID = 1; // Same as English version
+
     const footerData = {
-      address: 'Кишинёв, Молдова\nул. Пример 123',
-      contactItem: [
-        { label: 'Телефон', value: '+373 12 345 678' },
-        { label: 'Email', value: 'info@delicemy.md' },
-        { label: 'WhatsApp', value: '+373 12 345 678' }
+      logo: IMAGE_ID, // Reference to uploaded logo
+      tagline: 'Превосходный ручной шоколад с 2010 года',
+      description: 'DeliceMy — это премиальное шоколадное ателье в Кишинёве, Молдова. Мы создаём ремесленный шоколад, обучаем мастерству и помогаем бизнесу улучшить свои десертные предложения.',
+
+      // Services Section
+      servicesSection: {
+        title: 'Услуги',
+        links: [
+          { label: 'Шоколадная школа', href: '/school' },
+          { label: 'Консалтинг для HoReCa', href: '/services/horeca-consulting' },
+          { label: 'Индивидуальные подарки', href: '/services/custom-chocolate-gifts' },
+          { label: 'Мероприятия и дегустации', href: '/services/tastings-events' }
+        ]
+      },
+
+      // Learn Section
+      learnSection: {
+        title: 'Обучение',
+        links: [
+          { label: 'О нас', href: '/about' },
+          { label: 'Блог', href: '/blog' },
+          { label: 'Курсы', href: '/school' },
+          { label: 'Часто задаваемые вопросы', href: '/contact#faq' }
+        ]
+      },
+
+      // Explore Section
+      exploreSection: {
+        title: 'Узнать больше',
+        links: [
+          { label: 'Магазин', href: '/shop' },
+          { label: 'Галерея', href: '/about#gallery' },
+          { label: 'Отзывы', href: '/about#testimonials' },
+          { label: 'Портфолио', href: '/services#portfolio' }
+        ]
+      },
+
+      // Connect Section
+      connectSection: {
+        title: 'Связаться',
+        links: [
+          { label: 'Свяжитесь с нами', href: '/contact' },
+          { label: 'Забронировать занятие', href: '/school' },
+          { label: 'Получить расчёт', href: '/contact' },
+          { label: 'Посетить ателье', href: '/contact' }
+        ]
+      },
+
+      // Contact Information
+      contactInfo: {
+        title: 'Контакты',
+        email: 'info@delicemy.md',
+        phone: '+373 12 345 678',
+        address: 'Центр Кишинёва, Молдова',
+        hours: 'Пн-Пт: 10:00-18:00, Сб: 10:00-16:00'
+      },
+
+      // Social Links
+      socialTitle: 'Следите за нашим шоколадным путешествием',
+      socialLinks: [
+        { iconName: 'instagram', label: 'Instagram', href: 'https://instagram.com/delicemy' },
+        { iconName: 'facebook', label: 'Facebook', href: 'https://facebook.com/delicemy' },
+        { iconName: 'youtube', label: 'YouTube', href: 'https://youtube.com/@delicemy' },
+        { iconName: 'mail', label: 'Email', href: 'mailto:info@delicemy.md' }
       ],
-      socialLink: [
-        { platform: 'Facebook', url: 'https://facebook.com/delicemy' },
-        { platform: 'Instagram', url: 'https://instagram.com/delicemy' },
-        { platform: 'TikTok', url: 'https://tiktok.com/@delicemy' }
-      ],
-      bottomNote: '© 2025 DeliceMy. Создано с любовью в Кишинёве.',
-      legalLinks: [
-        { label: 'Политика конфиденциальности', url: '/privacy-policy', newTab: false },
-        { label: 'Условия использования', url: '/terms', newTab: false }
-      ]
+
+      // Newsletter
+      newsletter: {
+        title: 'Будьте в курсе',
+        description: 'Подпишитесь на нашу рассылку, чтобы получать эксклюзивные рецепты, советы по шоколаду и специальные предложения.',
+        placeholder: 'Введите ваш email',
+        buttonText: 'Подписаться',
+        successMessage: 'Спасибо за подписку! Проверьте ваш почтовый ящик.'
+      },
+
+      // Certifications
+      certifications: 'Сертифицированный профессиональный шоколатье • Международный дегустатор шоколада • Награждённое ателье',
+
+      // Copyright
+      copyright: {
+        companyName: 'DeliceMy',
+        rightsText: 'Все права защищены.',
+        madeWithText: 'Создано с любовью в Кишинёве',
+        locationText: 'Кишинёв, Молдова'
+      }
     };
 
     const payload = {
       data: {
         ...footerData,
+        locale: LOCALE,
         publishedAt: AUTO_PUBLISH ? new Date().toISOString() : null
       }
     };

@@ -1,7 +1,8 @@
 {
   "collectionName": "components_elements_cta_buttons",
   "info": {
-    "displayName": "ctaButton"
+    "displayName": "ctaButton",
+    "description": "Call-to-action button with optional subtext"
   },
   "options": {},
   "attributes": {
@@ -11,10 +12,21 @@
         "i18n": {
           "localized": true
         }
-      }
+      },
+      "required": true
+    },
+    "subtext": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "description": "Optional smaller text below the main button text"
     },
     "href": {
-      "type": "string"
+      "type": "string",
+      "required": true
     }
   },
   "config": {}

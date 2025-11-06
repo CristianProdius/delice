@@ -62,6 +62,7 @@ export interface SectionHeader {
 export interface CTAButton {
   id: number;
   text?: string;
+  subtext?: string;
   href?: string;
 }
 
@@ -73,6 +74,7 @@ export interface ImageComponent {
   caption?: string;
   lazyLoad: boolean;
   link?: string;
+  category?: string;
 }
 
 export interface HeroSection {
@@ -117,13 +119,27 @@ export interface BenefitsSection {
 export interface ListItem {
   id: number;
   text: string;
+  title?: string;
+  description?: string;
+  iconName?: string;
+}
+
+export interface Stat {
+  id: number;
+  number: string;
+  label: string;
 }
 
 export interface AboutSection {
   id: number;
   __component: 'sections.about';
   header: SectionHeader;
+  personName?: string;
+  role?: string;
+  roleSubtitle?: string;
+  highlight?: string;
   intro: any[]; // Rich text blocks
+  stats?: Stat[];
   listItem: ListItem[];
   portrait: ImageComponent;
   ctaButton: CTAButton;
@@ -167,7 +183,13 @@ export interface BannerSection {
   layout: 'center' | 'left' | 'right';
   theme: 'primary' | 'secondary' | 'accent';
   background?: ImageComponent | null;
+  foregroundImage?: ImageComponent | null;
+  signature?: StrapiImage | null;
   ctaButtons: CTAButton[];
+  contactEmail?: string;
+  contactPhone?: string;
+  contactAddress?: string;
+  mascotQuote?: string;
 }
 
 export interface ContactFormSection {

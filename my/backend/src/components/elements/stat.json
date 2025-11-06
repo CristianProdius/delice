@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_elements_stats",
+  "info": {
+    "displayName": "stat",
+    "description": "Statistics display with number and label"
+  },
+  "options": {},
+  "attributes": {
+    "number": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "label": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

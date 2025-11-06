@@ -76,11 +76,19 @@ export default async function LocaleLayout({
           {children}
           {footerData && (
             <Footer
-              address={footerData.address}
-              contactItem={footerData.contactItem}
-              socialLink={footerData.socialLink}
-              bottomNote={footerData.bottomNote}
-              legalLinks={footerData.legalLinks}
+              logo={footerData.logo}
+              tagline={footerData.tagline}
+              description={footerData.description}
+              servicesSection={footerData.servicesSection}
+              learnSection={footerData.learnSection}
+              exploreSection={footerData.exploreSection}
+              connectSection={footerData.connectSection}
+              contactInfo={footerData.contactInfo}
+              socialTitle={footerData.socialTitle}
+              socialLinks={footerData.socialLinks}
+              newsletter={footerData.newsletter}
+              certifications={footerData.certifications}
+              copyright={footerData.copyright}
               locale={locale}
             />
           )}
