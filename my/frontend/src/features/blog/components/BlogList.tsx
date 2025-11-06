@@ -35,9 +35,12 @@ export function BlogList({ posts, locale = 'en' }: BlogListProps) {
 
                 if (!media) return null;
 
+                const isAbsoluteUrl = media.url?.startsWith('http://') || media.url?.startsWith('https://');
+                const imageUrl = isAbsoluteUrl ? media.url : `${STRAPI_URL}${media.url}`;
+
                 return (
                   <Image
-                    src={`${STRAPI_URL}${media.url}`}
+                    src={imageUrl}
                     alt={post.coverImage.alt || post.title}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-300"

@@ -48,6 +48,7 @@ export default async function LocaleLayout({
   try {
     const headerResponse = await getHeader(locale);
     headerData = headerResponse.data;
+    console.log(`[Layout] Locale: ${locale}, Owner Name: ${headerData.ownerName}`);
   } catch (error) {
     console.error('Error fetching header:', error);
   }

@@ -54,7 +54,6 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          no-cache: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -93,12 +92,15 @@ jobs:
 
             echo ".env file created successfully ($(wc -l < .env) lines)"
 
-            # Pull latest image
-            sudo docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-
-            # Stop and remove old container
+            # Stop and remove old container first
             sudo docker stop delice-my-cms 2>/dev/null || true
             sudo docker rm delice-my-cms 2>/dev/null || true
+
+            # Remove old image to force fresh pull (prevents using cached old image)
+            sudo docker rmi ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest 2>/dev/null || true
+
+            # Pull latest image from registry
+            sudo docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
             # Start new container
             sudo docker run -d \
