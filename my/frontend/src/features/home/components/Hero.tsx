@@ -14,7 +14,7 @@ interface HeroProps {
 }
 
 export function Hero({ data, latestPost }: HeroProps) {
-  const { header, personName, background, ctaButton, clientStats, clientAvatars } = data;
+  const { header, personName, role, background, ctaButton, clientStats, clientAvatars } = data;
 
   // Handle Strapi 5 flat media structure
   const media = Array.isArray(background.media) ? background.media[0] : background.media;
@@ -72,25 +72,48 @@ export function Hero({ data, latestPost }: HeroProps) {
 
             {/* Content wrapper */}
             <div className="relative flex flex-col items-center lg:items-start my-auto gap-16 sm:gap-20 md:gap-24">
-              {/* Top Section: Main Title and CTA */}
+              {/* Top Section: Main Title */}
               <div className="text-center lg:text-left w-full">
                 <div className="w-full max-w-2xl mx-auto lg:mx-0">
-                  {/* Main Headline - Optimized for mobile */}
+                  {/* Main Headline */}
                   <motion.h1
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
-                    className="mb-8 sm:mb-8 md:mb-10 [font-family:var(--font-playfair)] text-4xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light leading-[1.15] sm:leading-tight tracking-tight"
+                    className="[font-family:var(--font-playfair)] text-4xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light leading-[1.15] sm:leading-tight tracking-tight text-white"
                   >
-                    <span className="text-white block">
-                      {header.title}
-                    </span>
-                    {personName && (
-                      <span className="text-white/90 italic font-extralight block mt-3 sm:mt-3 text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
-                        {personName}
-                      </span>
-                    )}
+                    {header.title}
                   </motion.h1>
+                </div>
+              </div>
+
+              {/* Bottom Section: Owner/Role/CTA, Client Count, and Blog Card */}
+              <div className="flex flex-col lg:flex-row justify-center lg:justify-between items-center lg:items-end gap-12 sm:gap-8 lg:gap-10 w-full max-w-full">
+                {/* Left: Owner/Role, CTA and Subtitle - grouped on desktop */}
+                <div className="w-full lg:max-w-md text-center lg:text-left order-1 flex flex-col gap-6">
+                  {/* Owner Name and Role with separator */}
+                  {(personName || role) && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3, duration: 0.8 }}
+                      className="flex items-center justify-center lg:justify-start gap-3 sm:gap-4"
+                    >
+                      {personName && (
+                        <span className="text-white/90 text-lg sm:text-xl md:text-2xl font-light italic">
+                          {personName}
+                        </span>
+                      )}
+                      {personName && role && (
+                        <span className="text-white/40 text-2xl sm:text-3xl font-thin">|</span>
+                      )}
+                      {role && (
+                        <span className="text-white/70 text-base sm:text-lg md:text-xl font-light">
+                          {role}
+                        </span>
+                      )}
+                    </motion.div>
+                  )}
 
                   {/* CTA Button */}
                   {ctaButton?.text && ctaButton?.href && (
@@ -108,31 +131,24 @@ export function Hero({ data, latestPost }: HeroProps) {
                       </Link>
                     </motion.div>
                   )}
+
+                  {/* Subtitle - only on desktop */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6, duration: 0.8 }}
+                    className="hidden lg:block"
+                  >
+                    {header.subtitle && (
+                      <p className="text-white/80 text-sm sm:text-sm md:text-base leading-relaxed">
+                        {header.subtitle}
+                      </p>
+                    )}
+                  </motion.div>
                 </div>
-              </div>
 
-              {/* Bottom Section: Author Quote, Client Count, and Blog Card */}
-              <div className="flex flex-col lg:flex-row justify-center lg:justify-between items-center lg:items-end gap-5 sm:gap-8 lg:gap-10 w-full max-w-full">
-
-                {/* Left: Author Quote - Show last on mobile, first on desktop */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6, duration: 0.8 }}
-                  className="w-full lg:max-w-md order-2 lg:order-1 text-center lg:text-left"
-                >
-                  {personName && (
-                    <p className="text-sm sm:text-sm text-white/60 mb-2 sm:mb-2">// {personName}</p>
-                  )}
-                  {header.subtitle && (
-                    <p className="text-white/80 text-sm sm:text-sm md:text-base leading-relaxed">
-                      {header.subtitle}
-                    </p>
-                  )}
-                </motion.div>
-
-                {/* Right: Client Count and Blog Card - Show first on mobile, last on desktop */}
-                <div className="flex flex-col items-center lg:items-end gap-4 sm:gap-6 lg:gap-8 w-full lg:w-auto order-1 lg:order-2">
+                {/* Right: Client Count and Blog Card - Show last on mobile */}
+                <div className="flex flex-col items-center lg:items-end gap-4 sm:gap-6 lg:gap-8 w-full lg:w-auto order-3 lg:order-2">
 
                   {/* Client Count Indicator */}
                   {clientStats && (
@@ -213,6 +229,20 @@ export function Hero({ data, latestPost }: HeroProps) {
                     </motion.div>
                   )}
                 </div>
+
+                {/* Subtitle - only on mobile, shown at bottom */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6, duration: 0.8 }}
+                  className="w-full lg:hidden order-2 text-center"
+                >
+                  {header.subtitle && (
+                    <p className="text-white/80 text-sm sm:text-sm md:text-base leading-relaxed">
+                      {header.subtitle}
+                    </p>
+                  )}
+                </motion.div>
               </div>
             </div>
           </motion.div>

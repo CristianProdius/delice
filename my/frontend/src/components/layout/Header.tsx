@@ -172,8 +172,8 @@ export function Header({ ownerName, menuItems = [], ctaButton, locale }: HeaderP
                   href={addLocaleToHref(ctaButton.href)}
                   className="group relative px-6 py-3 rounded-xl font-semibold text-white overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 transition-all duration-300 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-[#451C15] transition-all duration-300 group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-[#5a2419] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <span className="relative flex items-center gap-2">
                     {ctaButton.text}
                   </span>
@@ -353,7 +353,7 @@ export function Header({ ownerName, menuItems = [], ctaButton, locale }: HeaderP
               {/* CTA Button */}
               {ctaButton?.text && ctaButton?.href && (
                 <div
-                  className={`p-6 border-t border-gray-100 bg-white/80 backdrop-blur-sm transition-all duration-500 ${
+                  className={`p-6 border-t border-gray-100 bg-[#451C15] backdrop-blur-sm transition-all duration-500 ${
                     mobileMenuStage >= 3 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                   }`}
                   style={{
@@ -363,7 +363,7 @@ export function Header({ ownerName, menuItems = [], ctaButton, locale }: HeaderP
                   <Link
                     href={addLocaleToHref(ctaButton.href)}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full py-4 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary text-white rounded-xl font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-3 group"
+                    className="w-full py-4 bg-[#451C15] hover:bg-[#5a2419] text-white rounded-xl font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-3 group"
                   >
                     <span>{ctaButton.text}</span>
                     <svg

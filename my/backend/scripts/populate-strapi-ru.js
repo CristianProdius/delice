@@ -112,27 +112,38 @@ async function localizePage({ slug, title, sections, seo }) {
       return { action: 'пропущено', slug, title };
     }
 
-    // Check if Russian localization already exists
+    const sourceDocId = sourcePages[0].documentId || sourcePages[0].id;
+
+    // Check if Russian localization already exists for this document
     const ruQuery = `/pages?locale=${LOCALE}&filters[slug][$eq]=${encodeURIComponent(slug)}`;
     const ruPages = await api.get(ruQuery).then(r => r.data?.data ?? []).catch(() => []);
 
     const payload = {
-      slug,  // Important: must include slug to link localizations
       title,
       sections,
       seo,
-      locale: LOCALE,
       ...(AUTO_PUBLISH ? { publishedAt: new Date().toISOString() } : {})
     };
 
     if (ruPages.length > 0) {
       // Update existing Russian localization
       const ruId = ruPages[0].documentId || ruPages[0].id;
-      const res = await api.put(`/pages/${ruId}?locale=${LOCALE}`, { data: payload });
+      const res = await api.put(`/pages/${ruId}`, {
+        data: {
+          ...payload,
+          locale: LOCALE
+        }
+      });
       return { action: 'обновлено', id: ruId, title };
     } else {
-      // Create new Russian localization - Strapi 5 way
-      const res = await api.post(`/pages?locale=${LOCALE}`, { data: payload });
+      // Create new Russian localization - Strapi v5 creates it with locale and same slug
+      const res = await api.post(`/pages`, {
+        data: {
+          slug,
+          ...payload,
+          locale: LOCALE
+        }
+      });
       return { action: 'создано', id: res.data.data.documentId || res.data.data.id, title };
     }
   } catch (error) {
@@ -164,30 +175,41 @@ async function localizeService({ slug, title, shortDescription, description, ico
       return { action: 'пропущено', slug, title };
     }
 
+    const sourceDocId = sourceServices[0].documentId || sourceServices[0].id;
+
     // Check if Russian localization already exists
     const ruQuery = `/services?locale=${LOCALE}&filters[slug][$eq]=${encodeURIComponent(slug)}`;
     const ruServices = await api.get(ruQuery).then(r => r.data?.data ?? []).catch(() => []);
 
     const payload = {
-      slug,  // Important: must include slug to link localizations
       title,
       shortDescription,
       description,
       icon,
       featured,
       order,
-      locale: LOCALE,
       ...(AUTO_PUBLISH ? { publishedAt: new Date().toISOString() } : {})
     };
 
     if (ruServices.length > 0) {
       // Update existing Russian localization
       const ruId = ruServices[0].documentId || ruServices[0].id;
-      const res = await api.put(`/services/${ruId}?locale=${LOCALE}`, { data: payload });
+      const res = await api.put(`/services/${ruId}`, {
+        data: {
+          ...payload,
+          locale: LOCALE
+        }
+      });
       return { action: 'обновлено', id: ruId, title };
     } else {
-      // Create new Russian localization - Strapi 5 way
-      const res = await api.post(`/services?locale=${LOCALE}`, { data: payload });
+      // Create new Russian localization - Strapi v5 creates it with locale and same slug
+      const res = await api.post(`/services`, {
+        data: {
+          slug,
+          ...payload,
+          locale: LOCALE
+        }
+      });
       return { action: 'создано', id: res.data.data.documentId || res.data.data.id, title };
     }
   } catch (error) {
@@ -217,6 +239,8 @@ async function localizePost(postData) {
       return { action: 'пропущено', slug: postData.slug, title: postData.title };
     }
 
+    const sourceDocId = sourcePosts[0].documentId || sourcePosts[0].id;
+
     // Check if Russian localization already exists
     const ruQuery = `/posts?locale=${LOCALE}&filters[slug][$eq]=${encodeURIComponent(postData.slug)}`;
     const { data: ruData } = await api.get(ruQuery);
@@ -224,18 +248,29 @@ async function localizePost(postData) {
 
     const payload = {
       ...postData,
-      locale: LOCALE,
       publishedAt: AUTO_PUBLISH ? new Date().toISOString() : null
     };
+    delete payload.slug; // Don't include slug in payload, it's inherited from source
 
     if (ruPosts.length > 0) {
       // Update existing Russian localization
       const ruId = ruPosts[0].documentId || ruPosts[0].id;
-      const res = await api.put(`/posts/${ruId}?locale=${LOCALE}`, { data: payload });
+      const res = await api.put(`/posts/${ruId}`, {
+        data: {
+          ...payload,
+          locale: LOCALE
+        }
+      });
       return { id: ruId, action: 'обновлено', data: res.data.data };
     } else {
-      // Create new Russian localization - Strapi 5 way
-      const res = await api.post(`/posts?locale=${LOCALE}`, { data: payload });
+      // Create new Russian localization - Strapi v5 creates it with locale and same slug
+      const res = await api.post(`/posts`, {
+        data: {
+          slug: postData.slug,
+          ...payload,
+          locale: LOCALE
+        }
+      });
       return { id: res.data.data.documentId || res.data.data.id, action: 'создано', data: res.data.data };
     }
   } catch (err) {
