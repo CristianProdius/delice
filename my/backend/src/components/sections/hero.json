@@ -1,7 +1,8 @@
 {
   "collectionName": "components_sections_heroes",
   "info": {
-    "displayName": "hero"
+    "displayName": "hero",
+    "description": "Hero section with optional client stats and avatars"
   },
   "options": {},
   "attributes": {
@@ -26,6 +27,18 @@
       "component": "elements.cta-button",
       "repeatable": false,
       "required": true
+    },
+    "clientStats": {
+      "type": "component",
+      "component": "elements.stat",
+      "repeatable": false
+    },
+    "clientAvatars": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images"
+      ]
     }
   }
 }

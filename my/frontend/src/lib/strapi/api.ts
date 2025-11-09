@@ -97,6 +97,14 @@ export async function getFeaturedPosts(locale: string = 'en') {
   );
 }
 
+export async function getLatestPost(locale: string = 'en') {
+  const response = await fetchStrapi<StrapiResponse<Post[]>>(
+    '/posts?sort=publishedAt:desc&pagination[limit]=1&populate[coverImage][populate]=media',
+    { locale }
+  );
+  return response.data[0];
+}
+
 // Pages
 export async function getPage(slug: string, locale: string = 'en') {
   const response = await fetchStrapi<StrapiResponse<Page[]>>(

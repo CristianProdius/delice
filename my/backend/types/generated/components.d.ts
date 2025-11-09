@@ -662,11 +662,14 @@ export interface SectionsGallery extends Struct.ComponentSchema {
 export interface SectionsHero extends Struct.ComponentSchema {
   collectionName: 'components_sections_heroes';
   info: {
+    description: 'Hero section with optional client stats and avatars';
     displayName: 'hero';
   };
   attributes: {
     background: Schema.Attribute.Component<'elements.image', false> &
       Schema.Attribute.Required;
+    clientAvatars: Schema.Attribute.Media<'images', true>;
+    clientStats: Schema.Attribute.Component<'elements.stat', false>;
     ctaButton: Schema.Attribute.Component<'elements.cta-button', false> &
       Schema.Attribute.Required;
     header: Schema.Attribute.Component<'elements.section-header', false> &

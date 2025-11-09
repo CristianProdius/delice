@@ -85,6 +85,8 @@ export interface HeroSection {
   role?: string;
   background: ImageComponent;
   ctaButton: CTAButton;
+  clientStats?: Stat;
+  clientAvatars?: StrapiImage[];
 }
 
 export interface ServiceItem {

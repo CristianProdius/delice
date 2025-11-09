@@ -42,6 +42,8 @@ export async function fetchStrapi<T>(
     url.searchParams.set('populate[18]', 'sections.foregroundImage');
     url.searchParams.set('populate[19]', 'sections.foregroundImage.media');
     url.searchParams.set('populate[20]', 'sections.signature');
+    url.searchParams.set('populate[21]', 'sections.clientStats');
+    url.searchParams.set('populate[22]', 'sections.clientAvatars');
   } else if (!pathHasPopulate) {
     // Only set default populate if not already in path
     url.searchParams.set('populate', '*');

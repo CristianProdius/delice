@@ -143,8 +143,8 @@ async function upsertPage({ title, slug, sections, seo }) {
 }
 
 // ====== MEDIA IDS ======
-// Using your uploaded image (ID: 1) for all images temporarily
-const IMAGE_ID = 1;  // Your uploaded image in Strapi
+// Using your uploaded image (ID: 2) for all images temporarily
+const IMAGE_ID = 2;  // Your uploaded image in Strapi
 
 const MEDIA = {
   hero_home: IMAGE_ID,

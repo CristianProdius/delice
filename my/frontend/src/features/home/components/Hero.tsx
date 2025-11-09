@@ -3,17 +3,18 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { Star, ChevronDown } from 'lucide-react';
-import { HeroSection } from '@/types/strapi';
+import { ArrowRight } from 'lucide-react';
+import { HeroSection, Post } from '@/types/strapi';
 import { STRAPI_URL } from '@/lib/strapi/client';
 import { Link } from '@/i18n/routing';
 
 interface HeroProps {
   data: HeroSection;
+  latestPost?: Post;
 }
 
-export function Hero({ data }: HeroProps) {
-  const { header, personName, role, background, ctaButton } = data;
+export function Hero({ data, latestPost }: HeroProps) {
+  const { header, personName, background, ctaButton, clientStats, clientAvatars } = data;
 
   // Handle Strapi 5 flat media structure
   const media = Array.isArray(background.media) ? background.media[0] : background.media;
@@ -24,194 +25,198 @@ export function Hero({ data }: HeroProps) {
     ? (isAbsoluteUrl ? media.url : `${STRAPI_URL}${media.url}`)
     : '/placeholder.jpg';
 
+  // Get blog post image
+  const blogMedia = latestPost?.coverImage ?
+    (Array.isArray(latestPost.coverImage.media) ? latestPost.coverImage.media[0] : latestPost.coverImage.media) : null;
+  const blogImageUrl = blogMedia?.url
+    ? (blogMedia.url.startsWith('http') ? blogMedia.url : `${STRAPI_URL}${blogMedia.url}`)
+    : '/placeholder.jpg';
+
+  // Get avatar images - handle both array and object formats
+  const avatarImages = (Array.isArray(clientAvatars) ? clientAvatars : [])?.slice(0, 3) || [];
+
   return (
     <section className="relative min-h-screen overflow-hidden">
-      {/* Background Image with Parallax */}
-      <motion.div className="absolute inset-0 z-0">
-        <div className="absolute inset-0">
-          <Image
-            src={backgroundImageUrl}
-            alt={background.alt || 'Hero background'}
-            fill
-            className="object-cover"
-            priority
-            quality={90}
-          />
-          {/* Dark overlay for better text readability */}
-          <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/60 to-black/70" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-        </div>
-      </motion.div>
-
-      {/* Animated floating elements */}
-      <div className="absolute top-10 sm:top-20 left-5 sm:left-10 md:left-20 opacity-20 pointer-events-none">
-        <div className="w-20 sm:w-24 md:w-32 h-20 sm:h-24 md:h-32 rounded-full bg-gradient-to-br from-amber-400/40 to-amber-600/60 blur-2xl sm:blur-3xl animate-pulse" />
-      </div>
-
-      <div className="absolute bottom-10 sm:bottom-20 right-5 sm:right-10 md:right-20 opacity-20 pointer-events-none">
-        <div className="w-24 sm:w-32 md:w-40 h-24 sm:h-32 md:h-40 rounded-full bg-gradient-to-br from-amber-400/40 to-amber-600/60 blur-2xl sm:blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-      </div>
-
-      <div className="absolute top-1/3 right-1/4 opacity-30 pointer-events-none hidden sm:block">
-        <div className="w-16 sm:w-20 md:w-24 h-16 sm:h-20 md:h-24 rounded-full bg-gradient-to-br from-amber-400/30 to-amber-600/50 blur-xl sm:blur-2xl animate-pulse" style={{ animationDelay: '2s' }} />
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src={backgroundImageUrl}
+          alt={background.alt || 'Hero background'}
+          fill
+          className="object-cover"
+          priority
+          quality={90}
+        />
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/50 to-black/60" />
       </div>
 
       {/* Main Content Container */}
-      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-8 sm:pb-12 mt-6">
-        <motion.div className="w-full max-w-7xl">
-          {/* Glass Morphism Card */}
+      <div className="relative z-10 w-full min-h-screen flex items-center px-3 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16">
+        <div className="max-w-7xl mx-auto w-full">
+          {/* Glass Morphism Container */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="mx-auto max-w-7xl"
+            className="relative backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl sm:rounded-2xl lg:rounded-3xl p-6 sm:p-6 md:p-8 lg:p-10 xl:p-12 shadow-2xl overflow-hidden w-full min-h-[85vh] sm:min-h-[75vh] md:min-h-[80vh] flex flex-col"
           >
-            <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 lg:p-16 shadow-2xl overflow-hidden">
-              {/* Noise Texture Overlay */}
-              <div
-                className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                style={{
-                  backgroundImage:
-                    "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='3.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")",
-                }}
-              />
+            {/* Noise Texture Overlay */}
+            <div
+              className="absolute inset-0 opacity-[0.03] pointer-events-none"
+              style={{
+                backgroundImage:
+                  "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='3.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")",
+              }}
+            />
 
-              <div className="relative">{/* Content wrapper */}
-              {/* Premium Badge (using kicker if available) */}
-              {header.kicker && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.3, duration: 0.5 }}
-                  className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 mb-4 sm:mb-6 rounded-full bg-gradient-to-r from-amber-400/20 to-amber-600/20 border border-amber-400/30"
-                >
-                  <Star className="w-3 h-3 sm:w-4 sm:h-4 text-amber-200" />
-                  <span className="text-xs sm:text-sm font-medium text-amber-100">
-                    {header.kicker}
-                  </span>
-                </motion.div>
-              )}
-
-              {/* Main Headline */}
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.4, duration: 0.6 }}
-                className="mb-4 sm:mb-6 [font-family:var(--font-playfair)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extralight leading-tight tracking-[-0.02em]"
-              >
-                <span className="text-transparent bg-clip-text bg-gradient-to-br from-white via-amber-50/95 to-amber-100/90 block">
-                  {header.title}
-                </span>
-                {personName && (
-                  <span className="text-transparent bg-clip-text bg-gradient-to-br from-amber-100/90 via-amber-200/80 to-amber-300/70 italic font-thin block mt-1 sm:mt-2">
-                    {personName}
-                  </span>
-                )}
-              </motion.h1>
-
-              {/* Subtitle */}
-              {header.subtitle && (
-                <>
-                  <motion.p
+            {/* Content wrapper */}
+            <div className="relative flex flex-col items-center lg:items-start my-auto gap-16 sm:gap-20 md:gap-24">
+              {/* Top Section: Main Title and CTA */}
+              <div className="text-center lg:text-left w-full">
+                <div className="w-full max-w-2xl mx-auto lg:mx-0">
+                  {/* Main Headline - Optimized for mobile */}
+                  <motion.h1
                     initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.5, duration: 0.6 }}
-                    className="mb-6 sm:mb-8 text-base sm:text-lg md:text-xl text-white/70 max-w-3xl"
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
+                    className="mb-8 sm:mb-8 md:mb-10 [font-family:var(--font-playfair)] text-4xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light leading-[1.15] sm:leading-tight tracking-tight"
                   >
-                    {header.subtitle}
-                  </motion.p>
+                    <span className="text-white block">
+                      {header.title}
+                    </span>
+                    {personName && (
+                      <span className="text-white/90 italic font-extralight block mt-3 sm:mt-3 text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
+                        {personName}
+                      </span>
+                    )}
+                  </motion.h1>
 
-                  {/* Refined accent line */}
-                  <motion.div
-                    initial={{ scaleX: 0, opacity: 0 }}
-                    whileInView={{ scaleX: 1, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.8, duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-                    className="mb-8 sm:mb-10 h-px w-24 sm:w-32 lg:w-40 bg-gradient-to-r from-transparent via-amber-200/50 to-transparent"
-                  />
-                </>
-              )}
+                  {/* CTA Button */}
+                  {ctaButton?.text && ctaButton?.href && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4, duration: 0.8 }}
+                      className="flex justify-center lg:justify-start"
+                    >
+                      <Link
+                        href={ctaButton.href}
+                        className="inline-flex items-center justify-center gap-2 px-8 sm:px-8 py-4 sm:py-4 text-base sm:text-base md:text-lg font-semibold text-gray-900 bg-white rounded-full transition-all duration-300 hover:bg-gray-100 hover:scale-105 shadow-lg w-full sm:w-auto max-w-sm sm:max-w-none"
+                      >
+                        {ctaButton.text}
+                      </Link>
+                    </motion.div>
+                  )}
+                </div>
+              </div>
 
-              {/* Role */}
-              {role && (
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.55, duration: 0.6 }}
-                  className="mb-6 sm:mb-8 text-base sm:text-lg text-amber-200/60 max-w-2xl tracking-wider uppercase text-xs sm:text-sm"
-                >
-                  {role}
-                </motion.p>
-              )}
+              {/* Bottom Section: Author Quote, Client Count, and Blog Card */}
+              <div className="flex flex-col lg:flex-row justify-center lg:justify-between items-center lg:items-end gap-5 sm:gap-8 lg:gap-10 w-full max-w-full">
 
-              {/* CTA Button */}
-              {ctaButton?.text && ctaButton?.href && (
+                {/* Left: Author Quote - Show last on mobile, first on desktop */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.6, duration: 0.6 }}
-                  className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-10 md:mb-12"
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6, duration: 0.8 }}
+                  className="w-full lg:max-w-md order-2 lg:order-1 text-center lg:text-left"
                 >
-                  <Link
-                    href={ctaButton.href}
-                    className="group relative overflow-hidden px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white rounded-full transition-all duration-500 w-full sm:w-auto bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 hover:border-white/50 shadow-xl hover:shadow-2xl hover:scale-105"
-                  >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                      {ctaButton.text}
-                      <span className="transform transition-transform group-hover:translate-x-1">→</span>
-                    </span>
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400/0 via-amber-400/10 to-amber-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  </Link>
+                  {personName && (
+                    <p className="text-sm sm:text-sm text-white/60 mb-2 sm:mb-2">// {personName}</p>
+                  )}
+                  {header.subtitle && (
+                    <p className="text-white/80 text-sm sm:text-sm md:text-base leading-relaxed">
+                      {header.subtitle}
+                    </p>
+                  )}
                 </motion.div>
-              )}
-              </div>{/* End relative content wrapper */}
+
+                {/* Right: Client Count and Blog Card - Show first on mobile, last on desktop */}
+                <div className="flex flex-col items-center lg:items-end gap-4 sm:gap-6 lg:gap-8 w-full lg:w-auto order-1 lg:order-2">
+
+                  {/* Client Count Indicator */}
+                  {clientStats && (
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.7, duration: 0.8 }}
+                      className="flex items-center justify-center lg:justify-start gap-3 sm:gap-3 md:gap-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2.5 sm:px-4 sm:py-2 md:px-6 md:py-3 w-full sm:w-auto"
+                    >
+                      {/* Profile Images */}
+                      {avatarImages.length > 0 && (
+                        <div className="flex -space-x-2 sm:-space-x-3">
+                          {avatarImages.map((avatar, index) => {
+                            const avatarUrl = avatar.url?.startsWith('http')
+                              ? avatar.url
+                              : `${STRAPI_URL}${avatar.url}`;
+                            return (
+                              <div
+                                key={avatar.id || index}
+                                className="w-8 h-8 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full border-2 border-white/30 overflow-hidden relative"
+                              >
+                                <Image
+                                  src={avatarUrl}
+                                  alt={avatar.alternativeText || `Client ${index + 1}`}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                            );
+                          })}
+                          <div className="w-8 h-8 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full border-2 border-white/30 bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                            <span className="text-white text-xs sm:text-sm font-semibold">+</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Count */}
+                      <div className="flex flex-col">
+                        <span className="text-white font-bold text-xl sm:text-xl md:text-2xl">{clientStats.number}</span>
+                        <span className="text-white/70 text-xs sm:text-xs md:text-sm whitespace-nowrap">{clientStats.label}</span>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Blog Post Card */}
+                  {latestPost && (
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.8, duration: 0.8 }}
+                      className="w-full lg:w-auto"
+                    >
+                      <Link
+                        href={`/blog/${latestPost.slug}`}
+                        className="group flex items-center gap-3 sm:gap-3 md:gap-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl sm:rounded-2xl lg:rounded-3xl overflow-hidden hover:bg-white/15 transition-all duration-300 w-full lg:max-w-sm"
+                      >
+                        {/* Blog Image */}
+                        <div className="relative w-24 h-24 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 flex-shrink-0">
+                          <Image
+                            src={blogImageUrl}
+                            alt={latestPost.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+
+                        {/* Blog Content */}
+                        <div className="flex-1 py-3 sm:py-3 md:py-4 pr-3 sm:pr-3 md:pr-4 min-w-0">
+                          <h3 className="text-white font-semibold text-base sm:text-base md:text-lg mb-2 sm:mb-2 line-clamp-2 [font-family:var(--font-playfair)]">
+                            {latestPost.title}
+                          </h3>
+                          <div className="flex items-center gap-1.5 sm:gap-2 text-white/70 text-xs sm:text-xs md:text-sm group-hover:text-white/90 transition-colors">
+                            <span>Read More</span>
+                            <ArrowRight className="w-3.5 h-3.5 sm:w-3 sm:h-3 md:w-4 md:h-4 group-hover:translate-x-1 transition-transform" />
+                          </div>
+                        </div>
+                      </Link>
+                    </motion.div>
+                  )}
+                </div>
+              </div>
             </div>
           </motion.div>
-
-          {/* Scroll Indicator */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 0.6 }}
-            className="mt-8 sm:mt-12 flex justify-center"
-          >
-            <div className="flex flex-col items-center gap-1 sm:gap-2 cursor-pointer animate-bounce">
-              <span className="text-white/60 text-xs sm:text-sm">
-                Scroll to explore
-              </span>
-              <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-amber-200/70" />
-            </div>
-          </motion.div>
-        </motion.div>
-      </div>
-
-      {/* Decorative Bottom Wave */}
-      <div className="absolute bottom-0 left-0 right-0 z-20">
-        <svg
-          viewBox="0 0 1440 120"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-auto"
-          preserveAspectRatio="none"
-        >
-          <defs>
-            <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.05" />
-              <stop offset="50%" stopColor="#f59e0b" stopOpacity="0.08" />
-              <stop offset="100%" stopColor="#d97706" stopOpacity="0.05" />
-            </linearGradient>
-          </defs>
-          <path
-            d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
-            fill="url(#waveGradient)"
-          />
-        </svg>
+        </div>
       </div>
     </section>
   );

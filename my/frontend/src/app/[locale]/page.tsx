@@ -1,4 +1,4 @@
-import { getPage } from '@/lib/strapi/api';
+import { getPage, getLatestPost } from '@/lib/strapi/api';
 import { Hero } from '@/features/home/components/Hero';
 import { Services } from '@/features/home/components/Services';
 import { Benefits } from '@/features/home/components/Benefits';
@@ -26,8 +26,11 @@ export default async function HomePage({
   const { locale } = await params;
 
   try {
-    // Fetch the homepage from Strapi
-    const page = await getPage('home', locale);
+    // Fetch the homepage from Strapi and the latest blog post
+    const [page, latestPost] = await Promise.all([
+      getPage('home', locale),
+      getLatestPost(locale).catch(() => null), // Handle case where no posts exist
+    ]);
 
     if (!page) {
       return (
@@ -78,7 +81,7 @@ export default async function HomePage({
     return (
       <main className="min-h-screen">
         {/* Hero Section */}
-        {heroSection && <Hero data={heroSection} />}
+        {heroSection && <Hero data={heroSection} latestPost={latestPost || undefined} />}
 
         {/* Services Section */}
         {servicesSection && <Services data={servicesSection} locale={locale} />}
