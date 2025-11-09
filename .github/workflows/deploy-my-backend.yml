@@ -105,10 +105,11 @@ jobs:
             # Run database migrations before starting the app
             echo "Running database migrations..."
             sudo docker run --rm \
+              --name delice-my-cms-migrate \
               --network web \
               --env-file .env \
               ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
-              npm run strapi db:migrate
+              npm run strapi database:migrate
 
             echo "✅ Database migrations completed successfully"
 

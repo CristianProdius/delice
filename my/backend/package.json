@@ -11,8 +11,6 @@
     "develop": "strapi develop",
     "start": "strapi start",
     "strapi": "strapi",
-    "db:migrate": "strapi db:migrate",
-    "migration:create": "strapi migration:create",
     "upgrade": "npx @strapi/upgrade latest",
     "upgrade:dry": "npx @strapi/upgrade latest --dry"
   },
