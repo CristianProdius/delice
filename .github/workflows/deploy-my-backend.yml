@@ -102,6 +102,16 @@ jobs:
             # Pull latest image from registry
             sudo docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
+            # Run database migrations before starting the app
+            echo "Running database migrations..."
+            sudo docker run --rm \
+              --network web \
+              --env-file .env \
+              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
+              npm run strapi db:migrate
+
+            echo "✅ Database migrations completed successfully"
+
             # Start new container
             sudo docker run -d \
               --name delice-my-cms \

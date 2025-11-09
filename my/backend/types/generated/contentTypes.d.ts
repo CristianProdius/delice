@@ -723,7 +723,13 @@ export interface ApiPostPost extends Struct.CollectionTypeSchema {
     };
   };
   attributes: {
-    author: Schema.Attribute.String & Schema.Attribute.DefaultTo<'Olesea'>;
+    author: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'Olesea'>;
     category: Schema.Attribute.Enumeration<
       ['recipes', 'techniques', 'events', 'news', 'tips']
     > &
@@ -769,7 +775,12 @@ export interface ApiPostPost extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
-    slug: Schema.Attribute.UID<'title'>;
+    slug: Schema.Attribute.UID<'title'> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     tags: Schema.Attribute.JSON &
       Schema.Attribute.SetPluginOptions<{
         i18n: {

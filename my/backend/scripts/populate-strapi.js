@@ -101,8 +101,8 @@ async function testConnection() {
 // Upsert utility (find by slug+locale; create or update)
 async function upsertPage({ title, slug, sections, seo }) {
   try {
-    // Safer query with explicit ordering
-    const q = `/pages?locale=${encodeURIComponent(LOCALE)}&filters[slug][$eq]=${encodeURIComponent(slug)}`;
+    // Safer query with explicit ordering - include drafts with publicationState=preview
+    const q = `/pages?locale=${encodeURIComponent(LOCALE)}&filters[slug][$eq]=${encodeURIComponent(slug)}&publicationState=preview`;
     const found = await api.get(q).then(r => r.data?.data ?? []).catch(() => []);
 
     const payload = {
@@ -965,7 +965,7 @@ async function createOrUpdateBlog() {
 // Upsert utility for Services
 async function upsertService({ title, slug, shortDescription, description, icon, featured, order }) {
   try {
-    const q = `/services?locale=${encodeURIComponent(LOCALE)}&filters[slug][$eq]=${encodeURIComponent(slug)}`;
+    const q = `/services?locale=${encodeURIComponent(LOCALE)}&filters[slug][$eq]=${encodeURIComponent(slug)}&publicationState=preview`;
     const found = await api.get(q).then(r => r.data?.data ?? []).catch(() => []);
 
     const payload = {
@@ -1177,8 +1177,8 @@ async function createOrUpdateCustomGiftsService() {
 // Upsert function for blog posts
 async function upsertPost(postData) {
   try {
-    // Check if post exists by slug
-    const { data: existing } = await api.get(`/posts?filters[slug][$eq]=${postData.slug}&locale=${LOCALE}`);
+    // Check if post exists by slug - include drafts with publicationState=preview
+    const existing = await api.get(`/posts?filters[slug][$eq]=${postData.slug}&locale=${LOCALE}&publicationState=preview`).then(r => r.data?.data ?? []).catch(() => []);
 
     const payload = {
       data: {
@@ -1188,7 +1188,7 @@ async function upsertPost(postData) {
       }
     };
 
-    if (existing && existing.length > 0) {
+    if (existing.length > 0) {
       const id = existing[0].documentId || existing[0].id;
       const res = await api.put(`/posts/${id}`, payload);
       return { id, action: 'updated', data: res.data.data };
@@ -1523,13 +1523,12 @@ async function createOrUpdateHeader() {
     const payload = {
       data: {
         ...headerData,
-        locale: LOCALE,
         publishedAt: AUTO_PUBLISH ? new Date().toISOString() : null
       }
     };
 
-    // For single types, just PUT without checking if exists
-    const res = await api.put('/header', payload);
+    // For single types with i18n, locale goes in query parameter
+    const res = await api.put(`/header?locale=${LOCALE}`, payload);
     return { id: res.data.data.id || res.data.data.documentId, action: 'updated' };
   } catch (err) {
     console.error(`Error updating header:`, err?.response?.data || err.message);
@@ -1631,13 +1630,12 @@ async function createOrUpdateFooter() {
     const payload = {
       data: {
         ...footerData,
-        locale: LOCALE,
         publishedAt: AUTO_PUBLISH ? new Date().toISOString() : null
       }
     };
 
-    // For single types, just PUT without checking if exists
-    const res = await api.put('/footer', payload);
+    // For single types with i18n, locale goes in query parameter
+    const res = await api.put(`/footer?locale=${LOCALE}`, payload);
     return { id: res.data.data.id || res.data.data.documentId, action: 'updated' };
   } catch (err) {
     console.error(`Error updating footer:`, err?.response?.data || err.message);

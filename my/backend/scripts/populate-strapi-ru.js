@@ -103,8 +103,8 @@ async function testConnection() {
 // Localize utility - creates or updates a localization for an existing entry
 async function localizePage({ slug, title, sections, seo }) {
   try {
-    // First, find the English (source) page by slug
-    const sourceQuery = `/pages?locale=${SOURCE_LOCALE}&filters[slug][$eq]=${encodeURIComponent(slug)}`;
+    // First, find the English (source) page by slug - include drafts and populate localizations
+    const sourceQuery = `/pages?locale=${SOURCE_LOCALE}&filters[slug][$eq]=${encodeURIComponent(slug)}&publicationState=preview&populate=localizations`;
     const sourcePages = await api.get(sourceQuery).then(r => r.data?.data ?? []).catch(() => []);
 
     if (sourcePages.length === 0) {
@@ -112,11 +112,12 @@ async function localizePage({ slug, title, sections, seo }) {
       return { action: 'пропущено', slug, title };
     }
 
-    const sourceDocId = sourcePages[0].documentId || sourcePages[0].id;
+    const sourceDoc = sourcePages[0];
+    const sourceDocId = sourceDoc.documentId || sourceDoc.id;
 
-    // Check if Russian localization already exists for this document
-    const ruQuery = `/pages?locale=${LOCALE}&filters[slug][$eq]=${encodeURIComponent(slug)}`;
-    const ruPages = await api.get(ruQuery).then(r => r.data?.data ?? []).catch(() => []);
+    // Check if Russian localization already exists by looking at the source document's localizations
+    const existingRuLocalization = sourceDoc.localizations?.find(loc => loc.locale === LOCALE);
+    const ruPages = existingRuLocalization ? [existingRuLocalization] : [];
 
     const payload = {
       title,
@@ -136,8 +137,9 @@ async function localizePage({ slug, title, sections, seo }) {
       });
       return { action: 'обновлено', id: ruId, title };
     } else {
-      // Create new Russian localization - Strapi v5 creates it with locale and same slug
-      const res = await api.post(`/pages`, {
+      // Create new Russian localization linked to the source document
+      // Use the Strapi v5 localization endpoint to properly link translations
+      const res = await api.post(`/pages/${sourceDocId}/localizations`, {
         data: {
           slug,
           ...payload,
@@ -166,8 +168,8 @@ async function localizePage({ slug, title, sections, seo }) {
 // Localize service
 async function localizeService({ slug, title, shortDescription, description, icon, featured, order }) {
   try {
-    // Find the English service
-    const sourceQuery = `/services?locale=${SOURCE_LOCALE}&filters[slug][$eq]=${encodeURIComponent(slug)}`;
+    // Find the English service - include drafts and populate localizations
+    const sourceQuery = `/services?locale=${SOURCE_LOCALE}&filters[slug][$eq]=${encodeURIComponent(slug)}&publicationState=preview&populate=localizations`;
     const sourceServices = await api.get(sourceQuery).then(r => r.data?.data ?? []).catch(() => []);
 
     if (sourceServices.length === 0) {
@@ -175,11 +177,12 @@ async function localizeService({ slug, title, shortDescription, description, ico
       return { action: 'пропущено', slug, title };
     }
 
-    const sourceDocId = sourceServices[0].documentId || sourceServices[0].id;
+    const sourceDoc = sourceServices[0];
+    const sourceDocId = sourceDoc.documentId || sourceDoc.id;
 
-    // Check if Russian localization already exists
-    const ruQuery = `/services?locale=${LOCALE}&filters[slug][$eq]=${encodeURIComponent(slug)}`;
-    const ruServices = await api.get(ruQuery).then(r => r.data?.data ?? []).catch(() => []);
+    // Check if Russian localization already exists by looking at the source document's localizations
+    const existingRuLocalization = sourceDoc.localizations?.find(loc => loc.locale === LOCALE);
+    const ruServices = existingRuLocalization ? [existingRuLocalization] : [];
 
     const payload = {
       title,
@@ -202,8 +205,9 @@ async function localizeService({ slug, title, shortDescription, description, ico
       });
       return { action: 'обновлено', id: ruId, title };
     } else {
-      // Create new Russian localization - Strapi v5 creates it with locale and same slug
-      const res = await api.post(`/services`, {
+      // Create new Russian localization linked to the source document
+      // Use the Strapi v5 localization endpoint to properly link translations
+      const res = await api.post(`/services/${sourceDocId}/localizations`, {
         data: {
           slug,
           ...payload,
@@ -229,22 +233,21 @@ async function localizeService({ slug, title, shortDescription, description, ico
 // Localize post
 async function localizePost(postData) {
   try {
-    // Find the English post
-    const sourceQuery = `/posts?locale=${SOURCE_LOCALE}&filters[slug][$eq]=${encodeURIComponent(postData.slug)}`;
-    const { data: sourceData } = await api.get(sourceQuery);
-    const sourcePosts = sourceData?.data ?? [];
+    // Find the English post - include drafts and populate localizations
+    const sourceQuery = `/posts?locale=${SOURCE_LOCALE}&filters[slug][$eq]=${encodeURIComponent(postData.slug)}&publicationState=preview&populate=localizations`;
+    const sourcePosts = await api.get(sourceQuery).then(r => r.data?.data ?? []).catch(() => []);
 
     if (sourcePosts.length === 0) {
       console.log(`⚠️  Исходный пост не найден для slug: ${postData.slug}`);
       return { action: 'пропущено', slug: postData.slug, title: postData.title };
     }
 
-    const sourceDocId = sourcePosts[0].documentId || sourcePosts[0].id;
+    const sourceDoc = sourcePosts[0];
+    const sourceDocId = sourceDoc.documentId || sourceDoc.id;
 
-    // Check if Russian localization already exists
-    const ruQuery = `/posts?locale=${LOCALE}&filters[slug][$eq]=${encodeURIComponent(postData.slug)}`;
-    const { data: ruData } = await api.get(ruQuery);
-    const ruPosts = ruData?.data ?? [];
+    // Check if Russian localization already exists by looking at the source document's localizations
+    const existingRuLocalization = sourceDoc.localizations?.find(loc => loc.locale === LOCALE);
+    const ruPosts = existingRuLocalization ? [existingRuLocalization] : [];
 
     const payload = {
       ...postData,
@@ -263,8 +266,9 @@ async function localizePost(postData) {
       });
       return { id: ruId, action: 'обновлено', data: res.data.data };
     } else {
-      // Create new Russian localization - Strapi v5 creates it with locale and same slug
-      const res = await api.post(`/posts`, {
+      // Create new Russian localization linked to the source document
+      // Use the Strapi v5 localization endpoint to properly link translations
+      const res = await api.post(`/posts/${sourceDocId}/localizations`, {
         data: {
           slug: postData.slug,
           ...payload,
@@ -1570,7 +1574,6 @@ async function createOrUpdateFooter() {
     const payload = {
       data: {
         ...footerData,
-        locale: LOCALE,
         publishedAt: AUTO_PUBLISH ? new Date().toISOString() : null
       }
     };

@@ -57,7 +57,12 @@
     },
     "author": {
       "type": "string",
-      "default": "Olesea"
+      "default": "Olesea",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     },
     "publishedAt": {
       "type": "datetime"
